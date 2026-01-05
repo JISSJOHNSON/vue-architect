@@ -103,7 +103,8 @@ write_jsconfig() {
 }
 
 write_code_files() {
-  log_info "Writing professional source files..."
+  log_header "Engineered Source Generation"
+  log_info "Transpiling professional source files..."
   local ext="js"
   if $IS_TS; then ext="ts"; fi
 

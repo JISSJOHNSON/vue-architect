@@ -28,14 +28,11 @@ main() {
   check_requirements
   get_user_input "${1:-}"
   
-  log_header "Starting Fabrication of '${PROJECT_NAME}'"
-  
   setup_directory
   initialize_project
   install_dependencies
   generate_structure
   
-  log_header "Writing Configuration Generators"
   write_vite_config
   write_tailwind_config
   write_eslint_config

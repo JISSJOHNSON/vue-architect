@@ -49,16 +49,33 @@ setup_directory() {
 }
 
 initialize_project() {
-  log_header "Core Initialization"
+  log_header "Core Foundation"
   npm init -y > /dev/null
-  npm pkg set name="$PROJECT_NAME" type="module" > /dev/null
-  log_info "package.json created"
+  
+  # Set metadata
+  npm pkg set \
+    name="$PROJECT_NAME" \
+    version="0.1.0" \
+    description="A modern Vue.js application architected for scale." \
+    type="module" \
+    author="Jiss Johnson (https://jissjohnson.info)" \
+    homepage="https://jissjohnson.info" \
+    license="MIT" \
+    engines.node=">=18.0.0" \
+    keywords="vue, vite, tailwind, pinia, architect" \
+    > /dev/null
+
+  log_info "Manifest [package.json] initialized with metadata"
 }
 
 install_dependencies() {
-  log_header "Dependency Installation"
+  log_header "Dependency Harmonization"
   
-  start_spinner "Installing Vue Core"
+  local core_msg="Standardizing Vue Core"
+  if $USE_ROUTER; then core_msg="$core_msg + Navigation"; fi
+  if $USE_PINIA; then core_msg="$core_msg + State"; fi
+  
+  start_spinner "$core_msg"
   local CORE_DEPS="vue@$VUE_VERSION axios"
   if $USE_ROUTER; then CORE_DEPS="$CORE_DEPS vue-router@$ROUTER_VERSION"; fi
   if $USE_PINIA; then CORE_DEPS="$CORE_DEPS pinia@$PINIA_VERSION"; fi
@@ -69,9 +86,12 @@ install_dependencies() {
      stop_spinner
      fatal_error "Failed to install core dependencies."
   fi
-  stop_spinner "Vue Core installed"
+  stop_spinner "Vue Core Runtime integrated"
 
-  start_spinner "Installing Dev Tools"
+  local dev_msg="Configuring Environment"
+  if $USE_TAILWIND; then dev_msg="Configuring UI Framework"; fi
+  
+  start_spinner "$dev_msg"
   local DEV_DEPS="vite@$VITE_VERSION @vitejs/plugin-vue"
   
   if $USE_TAILWIND; then DEV_DEPS="$DEV_DEPS tailwindcss@$TAILWIND_VERSION postcss autoprefixer"; fi
@@ -88,7 +108,7 @@ install_dependencies() {
       stop_spinner
       fatal_error "Failed to install dev dependencies."
   fi
-  stop_spinner "Dev tools installed"
+  stop_spinner "Development ecosystem ready"
 }
 
 generate_structure() {
@@ -137,19 +157,40 @@ setup_git() {
 }
 
 update_scripts() {
-  npm pkg set scripts.dev="vite" scripts.preview="vite preview" > /dev/null
+  log_info "Synchronizing specialized scripts..."
   
+  # Base Scripts
+  npm pkg set \
+    scripts.dev="vite" \
+    scripts.build="vite build" \
+    scripts.preview="vite preview" \
+    > /dev/null
+  
+  # Type Checking
   if $IS_TS; then
-      npm pkg set scripts.build="vue-tsc --noEmit && vite build" > /dev/null
-  else
-      npm pkg set scripts.build="vite build" > /dev/null
+      npm pkg set \
+        scripts.type-check="vue-tsc --noEmit" \
+        scripts.build="npm run type-check && vite build" \
+        > /dev/null
   fi
   
+  # Linting & Formatting
   if $USE_ESLINT; then
-      npm pkg set scripts.lint="eslint . --fix" > /dev/null
+      npm pkg set \
+        scripts.lint="eslint . --fix" \
+        scripts.lint:check="eslint ." \
+        > /dev/null
   fi
   
   if $USE_PRETTIER; then
-      npm pkg set scripts.format="prettier --write ." > /dev/null
+      npm pkg set \
+        scripts.format="prettier --write ." \
+        scripts.format:check="prettier --check ." \
+        > /dev/null
+  fi
+
+  # Composite Scripts
+  if [[ "$USE_ESLINT" == "true" && "$USE_PRETTIER" == "true" ]]; then
+      npm pkg set scripts.verify="npm run lint:check && npm run format:check" > /dev/null
   fi
 }

@@ -12,16 +12,16 @@ readonly PRETTIER_VERSION="latest"
 readonly BMC_LINK="https://www.buymeacoffee.com/jissjohnson"
 
 # Global State
-PROJECT_NAME=""
-PROJECT_DIR=""
-IS_TS=false
-USE_ROUTER=true
-USE_PINIA=true
-USE_TAILWIND=true
-USE_ESLINT=true
-USE_PRETTIER=true
-USE_DATE_LIB=true
-USE_NUMBER_LIB=true
+PROJECT_NAME="${PROJECT_NAME:-}"
+PROJECT_DIR="${PROJECT_DIR:-}"
+IS_TS="${IS_TS:-false}"
+USE_ROUTER="${USE_ROUTER:-true}"
+USE_PINIA="${USE_PINIA:-true}"
+USE_TAILWIND="${USE_TAILWIND:-true}"
+USE_ESLINT="${USE_ESLINT:-true}"
+USE_PRETTIER="${USE_PRETTIER:-true}"
+USE_DATE_LIB="${USE_DATE_LIB:-true}"
+USE_NUMBER_LIB="${USE_NUMBER_LIB:-true}"
 START_TIME=$(date +%s)
 SPINNER_PID=""
 LAST_SELECTION=0

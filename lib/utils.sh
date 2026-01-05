@@ -28,14 +28,26 @@ else
     UNDERLINE=""
 fi
 
+# --- Animations ---
+typewriter() {
+    local text="$1"
+    local delay="${2:-0.02}"
+    for ((i=0; i<${#text}; i++)); do
+        echo -ne "${text:$i:1}"
+        sleep "$delay"
+    done
+    echo ""
+}
+
 # --- Logging & UI ---
 log_header() { 
-    echo -e "\n${BOLD}${BG_BLUE}${WHITE} :: $1 :: ${RESET}" 
+    echo -e "\n${BOLD}${BLUE}  $1${RESET}" 
+    echo -e "${BLUE}  ──────────────────────────────────────────${RESET}"
 }
-log_info()   { echo -e " ${CYAN}➜${RESET} $1"; }
-log_success(){ echo -e " ${GREEN}${ICON_CHECK}${RESET} $1"; }
-log_warn()   { echo -e " ${YELLOW}⚠️  $1${RESET}"; }
-log_error()  { echo -e " ${RED}${ICON_CROSS} $1${RESET}" >&2; }
+log_info()   { echo -e " ${BLUE}ℹ${RESET}  $1"; }
+log_success(){ echo -e " ${GREEN}✔${RESET}  $1"; }
+log_warn()   { echo -e " ${YELLOW}⚠${RESET}  $1"; }
+log_error()  { echo -e " ${RED}✖${RESET}  $1" >&2; }
 
 # --- Spinner ---
 start_spinner() {
