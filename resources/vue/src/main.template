@@ -2,6 +2,7 @@ import { createApp } from 'vue'
 import App from './App.vue'
 {{ROUTER_IMPORT}}
 {{PINIA_IMPORT}}
+{{UI_IMPORT}}
 
 // Styles
 import './assets/styles/main.css'
@@ -17,5 +18,6 @@ app.component('BaseButton', BaseButton)
 // Plugins
 {{PINIA_USE}}
 {{ROUTER_USE}}
+{{UI_USE}}
 
 app.mount('#app')

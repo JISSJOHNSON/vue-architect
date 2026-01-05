@@ -17,12 +17,13 @@ vue_initialize_project() {
     homepage="https://jissjohnson.info" \
     license="MIT" \
     engines.node=">=18.0.0" \
-    keywords="vue, $BUILD_TOOL, tailwind, pinia, architect" \
+    keywords="vue, $BUILD_TOOL, $UI_LIBRARY, pinia, architect" \
     architect.engine="vue" \
     architect.createdAt="$(date +"%Y-%m-%d %H:%M:%S")" \
     architect.features.typescript="$IS_TS" \
     architect.features.router="$USE_ROUTER" \
     architect.features.pinia="$USE_PINIA" \
+    architect.features.ui_library="$UI_LIBRARY" \
     architect.features.tailwind="$USE_TAILWIND" \
     architect.features.eslint="$USE_ESLINT" \
     architect.features.prettier="$USE_PRETTIER" \
@@ -46,6 +47,15 @@ vue_install_dependencies() {
   if $USE_PINIA; then CORE_DEPS="$CORE_DEPS pinia@$PINIA_VERSION"; fi
   if $USE_DATE_LIB; then CORE_DEPS="$CORE_DEPS date-fns"; fi
   if $USE_NUMBER_LIB; then CORE_DEPS="$CORE_DEPS numeral"; fi
+
+  # UI Library Core Dependencies
+  case $UI_LIBRARY in
+    "vuetify") CORE_DEPS="$CORE_DEPS vuetify@latest" ;;
+    "primevue") CORE_DEPS="$CORE_DEPS primevue@latest" ;;
+    "element-plus") CORE_DEPS="$CORE_DEPS element-plus @element-plus/icons-vue" ;;
+    "ant-design-vue") CORE_DEPS="$CORE_DEPS ant-design-vue@latest" ;;
+    "bootstrap") CORE_DEPS="$CORE_DEPS bootstrap @popperjs/core" ;;
+  esac
 
   npm install $CORE_DEPS --legacy-peer-deps > /dev/null 2>&1
   stop_spinner "Vue Core Runtime integrated"
@@ -73,6 +83,17 @@ vue_install_dependencies() {
     DEV_DEPS="$DEV_DEPS tailwindcss@$TAILWIND_VERSION postcss autoprefixer"
     if [[ "$BUILD_TOOL" == "webpack" ]]; then DEV_DEPS="$DEV_DEPS postcss-loader"; fi
   fi
+
+  # UI Library Dev Dependencies
+  case $UI_LIBRARY in
+    "vuetify") 
+      DEV_DEPS="$DEV_DEPS sass"
+      if [[ "$BUILD_TOOL" == "vite" ]]; then DEV_DEPS="$DEV_DEPS vite-plugin-vuetify"; fi
+      ;;
+    "bootstrap")
+      DEV_DEPS="$DEV_DEPS sass"
+      ;;
+  esac
   if $USE_ESLINT; then DEV_DEPS="$DEV_DEPS eslint@$ESLINT_VERSION eslint-plugin-vue globals"; fi
   if $USE_PRETTIER; then DEV_DEPS="$DEV_DEPS prettier@$PRETTIER_VERSION"; fi
   if [[ "$USE_ESLINT" == "true" && "$USE_PRETTIER" == "true" ]]; then DEV_DEPS="$DEV_DEPS @vue/eslint-config-prettier"; fi

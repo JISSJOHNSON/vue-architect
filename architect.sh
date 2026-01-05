@@ -37,7 +37,7 @@ main() {
   # 1. Project Configuration
   if [[ "${SILENT_MODE:-false}" != "true" ]]; then
     echo ""
-    echo -en "  ${BOLD}${BLUE}?${RESET} ${BOLD}${WHITE}Project Identifier: ${RESET}${CYAN}"
+    echo -en "  ${BOLD}${BLUE}?${RESET} ${BOLD}${WHITE}Project Name: ${RESET}${CYAN}"
     read -r input < /dev/tty
     PROJECT_NAME="${input:-my-vue-app}"
     

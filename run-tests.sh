@@ -97,5 +97,10 @@ run_test "webpack-js-app" "webpack" "false"
 # 4. Rollup + JS
 run_test "rollup-js-app" "rollup" "false"
 
+# 5. Vite + TS + Vuetify
+export UI_LIBRARY="vuetify"
+run_test "vite-vuetify-app" "vite" "true"
+unset UI_LIBRARY
+
 log_header "All Tests Passed!"
 echo -e "\nTest artifacts are available in: $TEST_ROOT"

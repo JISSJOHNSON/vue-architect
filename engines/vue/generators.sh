@@ -7,7 +7,18 @@
 write_vite_config() {
   local ext="js"
   if $IS_TS; then ext="ts"; fi
-  cp "$ARCHITECT_ROOT/resources/vue/vite.config.template" "vite.config.$ext"
+  
+  local ui_plugin_import=""
+  local ui_plugin_use=""
+  
+  if [[ "$UI_LIBRARY" == "vuetify" ]]; then
+    ui_plugin_import="import vuetify from 'vite-plugin-vuetify'"
+    ui_plugin_use="vuetify({ autoImport: true }),"
+  fi
+
+  generate_from_template "$ARCHITECT_ROOT/resources/vue/vite.config.template" "vite.config.$ext" \
+    "UI_PLUGIN_IMPORT" "$ui_plugin_import" \
+    "UI_PLUGIN_USE" "$ui_plugin_use"
 }
 
 write_webpack_config() {
@@ -209,7 +220,12 @@ write_code_files() {
   generate_from_template "$v_res/src/services/user.service.template" "src/services/user.service.$ext"
 
   # Styles
-  generate_from_template "$v_res/src/assets/styles/main.css.template" "src/assets/styles/main.css"
+  local tw_directives=""
+  if $USE_TAILWIND; then
+    tw_directives="@tailwind base;\n@tailwind components;\n@tailwind utilities;"
+  fi
+  generate_from_template "$v_res/src/assets/styles/main.css.template" "src/assets/styles/main.css" \
+    "TAILWIND_DIRECTIVES" "$(echo -e "$tw_directives")"
 
   # Main Entry
   local router_import=""
@@ -226,11 +242,37 @@ write_code_files() {
     pinia_use="app.use(createPinia())"
   fi
 
+  local ui_import=""
+  local ui_use=""
+  case $UI_LIBRARY in
+    "vuetify")
+      ui_import="import { createVuetify } from 'vuetify'\nimport 'vuetify/styles'\nimport * as components from 'vuetify/components'\nimport * as directives from 'vuetify/directives'"
+      ui_use="app.use(createVuetify({ components, directives }))"
+      ;;
+    "primevue")
+      ui_import="import PrimeVue from 'primevue/config'\nimport 'primevue/resources/themes/lara-light-green/theme.css'"
+      ui_use="app.use(PrimeVue)"
+      ;;
+    "element-plus")
+      ui_import="import ElementPlus from 'element-plus'\nimport 'element-plus/dist/index.css'"
+      ui_use="app.use(ElementPlus)"
+      ;;
+    "ant-design-vue")
+      ui_import="import Antd from 'ant-design-vue'\nimport 'ant-design-vue/dist/reset.css'"
+      ui_use="app.use(Antd)"
+      ;;
+    "bootstrap")
+      ui_import="import 'bootstrap/dist/css/bootstrap.min.css'\nimport 'bootstrap'"
+      ;;
+  esac
+
   generate_from_template "$v_res/src/main.template" "src/main.$ext" \
     "ROUTER_IMPORT" "$router_import" \
     "ROUTER_USE" "$router_use" \
     "PINIA_IMPORT" "$pinia_import" \
-    "PINIA_USE" "$pinia_use"
+    "PINIA_USE" "$pinia_use" \
+    "UI_IMPORT" "$(echo -e "$ui_import")" \
+    "UI_USE" "$ui_use"
 
   # App Entry
   local app_script=""
