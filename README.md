@@ -1,64 +1,63 @@
-# Vue Architect
+# Vue Architect 🏗️
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Vue.js-35495E?style=for-the-badge&logo=vue.js&logoColor=4FC08D" alt="Vue.js" />
-  <img src="https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white" alt="Vite" />
-  <img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
-  <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black" alt="JavaScript" />
-  <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS" />
+  <img src="https://img.shields.io/badge/Vue.js-35495E?style=for-the-badge&logo=vue.js&logoColor=4FC08D" alt="Vue.js Production Framework" />
+  <img src="https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white" alt="Vite Fast Build Tool" />
+  <img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript Support" />
+  <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS Design System" />
 </p>
 
 <p align="center">
+  <a href="https://jissjohnson.info">
+    <img src="https://img.shields.io/badge/Author-Jiss_Johnson-blue?style=flat-square" alt="Author Jiss Johnson">
+  </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/License-MIT-green.svg?style=flat-square" alt="MIT License">
   </a>
-  <a href="https://www.gnu.org/software/bash/">
-    <img src="https://img.shields.io/badge/Language-Bash-blue.svg?style=flat-square" alt="Written in Bash">
+  <a href="https://github.com/jissjohnson/vue-architect/stargazers">
+    <img src="https://img.shields.io/github/stars/jissjohnson/vue-architect?style=flat-square" alt="GitHub stars">
   </a>
-  <a href="https://github.com/jissjohnson/vue-architect/issues">
-    <img src="https://img.shields.io/github/issues/jissjohnson/vue-architect?style=flat-square&color=red" alt="Open Issues">
+  <a href="https://www.buymeacoffee.com/jissjohnson">
+    <img src="https://img.shields.io/badge/Buy_Me_A_Coffee-Support-orange?style=flat-square&logo=buy-me-a-coffee" alt="Support development">
   </a>
 </p>
 
-<p align="center">
-  <b>Opinionated • Scalable • Professional-Grade</b><br>
-  <i>Scaffold robust, modular, and cleaner Vue.js production environments in seconds.</i>
-</p>
+**Vue Architect** is a premium CLI scaffolding tool designed to transform how you start Vue.js projects. It automates the creation of a **production-ready, enterprise-grade architecture** in seconds, allowing you to focus on building features rather than configuring boilerplate.
 
 ---
 
-## 📖 Overview
+## 🔥 Why Vue Architect?
 
-**Vue Architect** is a powerful CLI tool designed for developers who value professional project organization. It goes beyond simple scaffolding by providing a **Layered Architecture** (Clean Architecture) that scales from small prototypes to enterprise-level applications.
+Standard starters often leave you with a flat structure that quickly becomes unmanageable. **Vue Architect** implements a **Layered Architecture (Clean Architecture)** principles, ensuring your codebase remains decoupled, testable, and scalable from Day 1.
 
-It eliminates "boilerplate fatigue" by automating the setup of API clients, services, helpers, and a robust design system, all through an **interactive terminal interface**.
+### 🌟 Key Highlights
+- **🚀 Ultra-Fast Setup**: Go from zero to a running development server in under 10 seconds.
+- **🏗️ Pro-Grade Architecture**: Logical separation of concerns with dedicated layers for API, Services, Models, and UI.
+- **🎨 Curated Design System**: Built-in Atomic Design support with `Base` components and pre-configured Tailwind tokens.
+- **🛠️ Developer-First DX**: Interactive terminal menus with arrow-key navigation and multi-select feature toggling.
+- **🔋 Batteries Included**: Pre-configured Axios interceptors, Storage helpers, and library-aware Formatters.
 
-## 🚀 Features
+---
 
-- **📂 Layered Architecture**: Decoupled `api`, `services`, `helpers`, and `stores` for maximum maintainability.
-- **📍 Flexible Scaffolding**: Create projects in the current directory, a new sub-folder, or any **absolute custom path**.
-- **🎨 Design System Ready**: Atomic component structure (`src/components/base`) with pre-configured Tailwind variables and global styles.
-- **🛡️ Type Safety**: First-class support for **TypeScript** (or JavaScript) with strict configurations.
-- **🧠 Intelligent Helpers**: Global `StorageHelper` (safe JSON & Cookies) and `FormatHelper` (library-aware date/number formatting).
-- **🔌 Optional Power-ups**: Toggle integrations for `date-fns`, `numeral`, `Vue Router`, and `Pinia` with a single spacebar tap.
-- **🧹 Code Quality**: Pre-configured **ESLint (Flat Config)** and **Prettier** integrations.
+## 🚀 Feature Matrix
 
-## ⚡ Integrations
+| Feature | Included | Description |
+| :--- | :---: | :--- |
+| **Vue 3 (Composition API)** | ✅ | The modern standard for reactive web development. |
+| **Vite 6** | ✅ | Lighting fast HMR and optimized production builds. |
+| **TypeScript / JS** | ✅ | Full support for both, including strict TS configurations. |
+| **Tailwind CSS 3** | ➕ | Optional utility-first styling with a professional base layer. |
+| **Vue Router** | ➕ | Pre-configured layouts and navigation guards. |
+| **Pinia** | ➕ | Intuitive, modular state management. |
+| **ESLint & Prettier** | ➕ | Industry-standard code style and quality enforcement. |
+| **Helper Libraries** | ➕ | Integration for `date-fns` (Date) and `numeral` (Currency). |
 
-| Category | Technology | Description |
-| :--- | :--- | :--- |
-| **Framework** | [**Vue.js 3**](https://vuejs.org/) | Modern composition API support. |
-| **Build Tool** | [**Vite**](https://vitejs.dev/) | Ultra-fast build and HMR. |
-| **API** | [**Axios**](https://axios-http.com/) | Included by default with request/response interceptors. |
-| **Routing** | [**Vue Router**](https://router.vuejs.org/) | Layout-based routing with dynamic meta. |
-| **State** | [**Pinia**](https://pinia.vuejs.org/) | Lightweight, intuitive state management. |
-| **Styling** | [**Tailwind CSS**](https://tailwindcss.com/) | Utility-first CSS with a curated color palette. |
-| **Utilities** | [**date-fns**](https://date-fns.org/) | (Optional) Modern date manipulation. |
-| **Utilities** | [**numeral**](http://numeraljs.com/) | (Optional) Advanced number formatting. |
+---
 
-## 📦 Quick Start
+## 🛠️ Quick Start Guide
 
-### 1. Installation
+### 1. Simple Installation
+No global installation required. Just clone and run.
 
 ```bash
 git clone https://github.com/jissjohnson/vue-architect.git
@@ -66,61 +65,65 @@ cd vue-architect
 chmod +x vue-architect.command
 ```
 
-### 2. Execution
+### 2. Launch the Architect
+Run the interactive command-line interface:
 
 ```bash
 ./vue-architect.command
 ```
-> **Tip:** On macOS, you can simply double-click `vue-architect.command` to start.
+*(On macOS, you can also just double-click the file in Finder)*
 
-### 3. Usage Flow
+### 3. Automated Configuration
+The tool will guide you through:
+- **Location**: Current directory, a new folder, or a custom target path.
+- **Stack**: Choose between JavaScript and TypeScript.
+- **Features**: Toggle Router, Pinia, Tailwind, and more using **Space** to select.
 
-1.  **Project Location**: Choose `Current Directory`, `New Sub-directory`, or `Custom Path`.
-2.  **Language**: Select `JavaScript` or `TypeScript`.
-3.  **Features**: Use **Space** to select features like Router, Pinia, or the optional helper libraries.
+---
 
-## 📂 Generated Project Structure
+## 📂 The Architected Anatomy
 
-The architect generates a "Clean Architecture" onion structure:
+Every project generated follows a strict, high-performance structural pattern:
 
 ```text
 src/
-├── api/            # Axios instance with auth/error interceptors
-├── assets/         # Static assets and global design system (CSS Variables)
-├── components/     # Component Library
-│   ├── base/       # Atomic UI elements (BaseButton, etc.)
-│   ├── common/     # Global layout pieces (Navbar, Footer)
-│   └── features/   # Complex, logic-heavy modules
-├── constants/      # App-wide magic strings, HTTP codes, and Config
-├── helpers/        # Storage (Cookies/Local) and Format (Date/Number) utilities
-├── layouts/        # Page structures (MainLayout, AuthLayout)
-├── router/         # Route definitions and Navigation Guards
-├── services/       # Decoupled business logic and API orchestration
-├── stores/         # Application state (Pinia)
-└── views/          # Dynamic page components and Error pages
+├── api/          # 📡 Axios instance with Auth & Error interceptors
+├── assets/       # 🎨 Global styles, images, and brand assets
+├── components/   # 🧩 Atomic UI components (base/common/features)
+├── constants/    # 🔑 Global constants, HTTP codes, and configurations
+├── helpers/      # 🧙 StorageHelper, Formatters, and logic wrappers
+├── layouts/      # 🖼️ View structures (Main, Auth, Dashboard)
+├── router/       # 🚦 Navigation logic and dynamic guards
+├── services/     # ⚙️ Business logic and API coordination layer
+├── stores/       # 📦 State persistence using Pinia
+└── views/        # 📄 Routeable page components
 ```
 
-## 🏗️ Technical Implementation
+---
 
-- **`vue-architect.command`**: Main orchestration.
-- **`lib/`**:
-    - `ui.sh`: Handles high-fidelity interactive menus.
-    - `actions.sh`: Handles file system ops and dependency installation.
-    - `generators.sh`: Main logic for template processing.
-    - `utils.sh`: String manipulation and template substitution.
-- **`resources/vue/`**: The core templates used for scaffolding.
+## 🛡️ Best Practices & Standards
 
-## 🤝 Contributing
+**Vue Architect** doesn't just give you files; it gives you a **standard**:
+- **Services Pattern**: Keeps components "thin" by moving logic to reusable service classes.
+- **Atomic Components**: `src/components/base` ensures UI consistency through small, reusable units.
+- **Helper Encapsulation**: Never touch `localStorage` or `date` logic directly; use the provided secure helpers.
+- **Flat Configs**: Uses the latest ESLint Flat Config and Prettier 3 for a modern linting experience.
 
-We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details on how to get started.
+---
+
+## 🤝 Community & Support
+
+- **Portfolio**: [Explore my work](https://jissjohnson.info)
+- **Issues**: [Report a bug or request a feature](https://github.com/jissjohnson/vue-architect/issues)
+- **Support**: [Buy me a coffee ☕](https://www.buymeacoffee.com/jissjohnson)
+
+---
 
 ## 📜 License
 
-Distributed under the **MIT License**. See [LICENSE](LICENSE) for more information.
-
-## ☕ Support the Project
-
-Boost development by [buying me a coffee](https://www.buymeacoffee.com/jissjohnson).
+Project is licensed under the **MIT License**. Feel free to use it for personal or commercial projects.
 
 ---
-© 2026 Jiss Johnson. Developed with ❤️ for the Vue community.
+<p align="center">
+  Developed with ❤️ by <b>Jiss Johnson</b>
+</p>
