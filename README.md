@@ -21,134 +21,106 @@
 </p>
 
 <p align="center">
-  <b>Opinionated • Scalable • Production-Ready</b><br>
-  <i>Instantly scaffold a robust, modular Vue.js development environment.</i>
+  <b>Opinionated • Scalable • Professional-Grade</b><br>
+  <i>Scaffold robust, modular, and cleaner Vue.js production environments in seconds.</i>
 </p>
 
 ---
 
 ## 📖 Overview
 
-**Vue Architect** is a CLI tool designed to skip the repetitive "boilerplate fatigue." Instead of spending 30 minutes configuring ESLint, setting up Pinia, or debugging tailwind configs, run one command and start coding immediately.
+**Vue Architect** is a powerful CLI tool designed for developers who value professional project organization. It goes beyond simple scaffolding by providing a **Layered Architecture** (Clean Architecture) that scales from small prototypes to enterprise-level applications.
 
-It offers a **fully interactive terminal interface** to let you cherry-pick exactly what you need for your modern web application.
-
-## ⚡ Tech Stack & Integrations
-
-Vue Architect integrates the best-in-class tools from the Vue ecosystem. Click on any technology to learn more:
-
-| Category | Technology | Description |
-| :--- | :--- | :--- |
-| **Framework** | [**Vue.js 3**](https://vuejs.org/) | The progressive JavaScript framework. |
-| **Build Tool** | [**Vite**](https://vitejs.dev/) | Next generation frontend tooling. |
-| **Routing** | [**Vue Router**](https://router.vuejs.org/) | (Optional) The official router for Vue.js. |
-| **State** | [**Pinia**](https://pinia.vuejs.org/) | (Optional) The intuitive store for Vue.js. |
-| **Styling** | [**Tailwind CSS**](https://tailwindcss.com/) | (Optional) A utility-first CSS framework. |
-| **Language** | [**TypeScript**](https://www.typescriptlang.org/) | (Optional) Strongly typed JavaScript. |
-| **Language** | [**JavaScript**](https://developer.mozilla.org/en-US/docs/Web/JavaScript) | The language of the web. |
-| **Linting** | [**ESLint**](https://eslint.org/) | Find and fix problems in your JavaScript code. |
-| **Formatting**| [**Prettier**](https://prettier.io/) | An opinionated code formatter. |
+It eliminates "boilerplate fatigue" by automating the setup of API clients, services, helpers, and a robust design system, all through an **interactive terminal interface**.
 
 ## 🚀 Features
 
-- **🎨 Interactive CLI**: Beautiful, animated terminal interface with keyboard navigation.
-- **🛡️ Type Safety**: First-class support for **TypeScript** (or JavaScript, if you prefer).
-- **🧩 Modular Architecture**: Scaffolds a scalable folder structure (`src/features`, `src/layouts`) rather than a flat mess.
-- **🧹 Code Quality**: Automated setup for **ESLint (Flat Config)** and **Prettier**.
-- **🧠 Smart scaffolding**: The generated code adapts to your choices (e.g., proper Pinia imports only when selected).
-- **⚡ Performance**: Built on top of Vite for blazing fast startup and HMR.
+- **📂 Layered Architecture**: Decoupled `api`, `services`, `helpers`, and `stores` for maximum maintainability.
+- **📍 Flexible Scaffolding**: Create projects in the current directory, a new sub-folder, or any **absolute custom path**.
+- **🎨 Design System Ready**: Atomic component structure (`src/components/base`) with pre-configured Tailwind variables and global styles.
+- **🛡️ Type Safety**: First-class support for **TypeScript** (or JavaScript) with strict configurations.
+- **🧠 Intelligent Helpers**: Global `StorageHelper` (safe JSON & Cookies) and `FormatHelper` (library-aware date/number formatting).
+- **🔌 Optional Power-ups**: Toggle integrations for `date-fns`, `numeral`, `Vue Router`, and `Pinia` with a single spacebar tap.
+- **🧹 Code Quality**: Pre-configured **ESLint (Flat Config)** and **Prettier** integrations.
 
-## 🛠 Prerequisites
+## ⚡ Integrations
 
-Before running the architect, ensure you have:
-
-*   **Node.js** (v18.0.0+)
-*   **Git** (For version control)
-*   **Bash** (Native on macOS/Linux. Windows users: use WSL/Git Bash).
+| Category | Technology | Description |
+| :--- | :--- | :--- |
+| **Framework** | [**Vue.js 3**](https://vuejs.org/) | Modern composition API support. |
+| **Build Tool** | [**Vite**](https://vitejs.dev/) | Ultra-fast build and HMR. |
+| **API** | [**Axios**](https://axios-http.com/) | Included by default with request/response interceptors. |
+| **Routing** | [**Vue Router**](https://router.vuejs.org/) | Layout-based routing with dynamic meta. |
+| **State** | [**Pinia**](https://pinia.vuejs.org/) | Lightweight, intuitive state management. |
+| **Styling** | [**Tailwind CSS**](https://tailwindcss.com/) | Utility-first CSS with a curated color palette. |
+| **Utilities** | [**date-fns**](https://date-fns.org/) | (Optional) Modern date manipulation. |
+| **Utilities** | [**numeral**](http://numeraljs.com/) | (Optional) Advanced number formatting. |
 
 ## 📦 Quick Start
 
 ### 1. Installation
 
-Clone the repository to get the latest version of the architect.
-
 ```bash
 git clone https://github.com/jissjohnson/vue-architect.git
 cd vue-architect
+chmod +x vue-architect.command
 ```
 
 ### 2. Execution
 
-Make the script executable and run it.
-
 ```bash
-chmod +x vue-architect.command
 ./vue-architect.command
 ```
-> **Tip:** On macOS, you can simply double-click `vue-architect.command` in Finder!
+> **Tip:** On macOS, you can simply double-click `vue-architect.command` to start.
 
-### 3. Usage
+### 3. Usage Flow
 
-Follow the interactive prompts:
+1.  **Project Location**: Choose `Current Directory`, `New Sub-directory`, or `Custom Path`.
+2.  **Language**: Select `JavaScript` or `TypeScript`.
+3.  **Features**: Use **Space** to select features like Router, Pinia, or the optional helper libraries.
 
-1.  **Project Name**: Enter a lowercase name (e.g., `my-dashboard`).
-2.  **Language**: Choose between JS or TS.
-3.  **Features**: Use **Space** to toggle features and **Enter** to confirm.
+## 📂 Generated Project Structure
 
-## 📂 Generated Structure
-
-Your new project will look like this (depending on selected features):
+The architect generates a "Clean Architecture" onion structure:
 
 ```text
-my-vue-app/
-├── public/
-├── src/
-│   ├── assets/          # Static assets (images, fonts)
-│   ├── components/      # Shared components
-│   │   ├── common/      # Global (Footer, Navbar)
-│   │   └── features/    # complex feature-specific components
-│   ├── layouts/         # Page layouts (DefaultLayout)
-│   ├── views/           # Route views / Pages
-│   ├── router/          # (Optional) Router config
-│   ├── stores/          # (Optional) Pinia stores
-│   ├── utils/           # Helper functions
-│   ├── App.vue          # Root component
-│   └── main.ts          # Application entry
-├── .gitignore
-├── index.html
-├── package.json
-└── vite.config.ts
+src/
+├── api/            # Axios instance with auth/error interceptors
+├── assets/         # Static assets and global design system (CSS Variables)
+├── components/     # Component Library
+│   ├── base/       # Atomic UI elements (BaseButton, etc.)
+│   ├── common/     # Global layout pieces (Navbar, Footer)
+│   └── features/   # Complex, logic-heavy modules
+├── constants/      # App-wide magic strings, HTTP codes, and Config
+├── helpers/        # Storage (Cookies/Local) and Format (Date/Number) utilities
+├── layouts/        # Page structures (MainLayout, AuthLayout)
+├── router/         # Route definitions and Navigation Guards
+├── services/       # Decoupled business logic and API orchestration
+├── stores/         # Application state (Pinia)
+└── views/          # Dynamic page components and Error pages
 ```
 
-## 🏗️ Internal Architecture
+## 🏗️ Technical Implementation
 
-If you want to contribute, here is how `vue-architect` itself is organized:
-
-- **`vue-architect.command`**: Main entry point.
+- **`vue-architect.command`**: Main orchestration.
 - **`lib/`**:
-    - `ui.sh`: Handles the interactive menus and banners.
-    - `actions.sh`: Core logic implementation.
-    - `generators.sh`: Templates for code generation.
+    - `ui.sh`: Handles high-fidelity interactive menus.
+    - `actions.sh`: Handles file system ops and dependency installation.
+    - `generators.sh`: Main logic for template processing.
+    - `utils.sh`: String manipulation and template substitution.
+- **`resources/vue/`**: The core templates used for scaffolding.
 
 ## 🤝 Contributing
 
-We love contributions! Please read our [Contributing Guide](CONTRIBUTING.md) (coming soon) or simply:
-
-1.  Fork it.
-2.  Create your feature branch (`git checkout -b feature/cool-thing`).
-3.  Commit your changes (`git commit -m 'Add cool thing'`).
-4.  Push to the branch (`git push origin feature/cool-thing`).
-5.  Open a Pull Request.
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details on how to get started.
 
 ## 📜 License
 
-This project is licensed under the **MIT License**. See [LICENSE](LICENSE) for details.
+Distributed under the **MIT License**. See [LICENSE](LICENSE) for more information.
 
 ## ☕ Support the Project
 
-If `Vue Architect` saved you time, consider buying me a coffee to keep the momentum going!
+Boost development by [buying me a coffee](https://www.buymeacoffee.com/jissjohnson).
 
-<br>
-<a href="https://www.buymeacoffee.com/jissjohnson" target="_blank">
-  <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" width="200" />
-</a>
+---
+© 2026 Jiss Johnson. Developed with ❤️ for the Vue community.
