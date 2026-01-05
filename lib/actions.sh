@@ -18,18 +18,34 @@ check_requirements() {
 }
 
 setup_directory() {
-  if [[ -d "$PROJECT_DIR" ]]; then
-    log_warn "Folder '$PROJECT_NAME' exists."
-    echo -e -n "${YELLOW}  Overwrite? (y/N): ${RESET}"
+  local target_desc="'$PROJECT_NAME'"
+  local current_pwd=$(pwd)
+  
+  if [[ "$PROJECT_DIR" == "$current_pwd" ]]; then 
+    target_desc="current directory"
+  else
+    target_desc="directory '$PROJECT_DIR'"
+  fi
+
+  if [[ -d "$PROJECT_DIR" && "$(ls -A "$PROJECT_DIR" 2>/dev/null)" ]]; then
+    log_warn "Target $target_desc is not empty."
+    echo -e -n "${YELLOW}  Continue and potentially overwrite files? (y/N): ${RESET}"
     read -r confirm < /dev/tty
     if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
       echo "Aborting."
       exit 0
     fi
-    rm -rf "$PROJECT_DIR"
+    
+    # If it's a sub-directory or custom path (not current working dir), we can safely wipe it
+    if [[ "$PROJECT_DIR" != "$current_pwd" ]]; then
+        rm -rf "$PROJECT_DIR"
+        mkdir -p "$PROJECT_DIR"
+    fi
+  else
+    mkdir -p "$PROJECT_DIR"
   fi
-  mkdir -p "$PROJECT_DIR"
-  cd "$PROJECT_DIR"
+  
+  cd "$PROJECT_DIR" || fatal_error "Could not access $PROJECT_DIR"
 }
 
 initialize_project() {

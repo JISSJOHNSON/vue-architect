@@ -61,7 +61,7 @@ select_language_opt() {
   done
   
   tput cnorm # Restore cursor
-  return $selection
+  LAST_SELECTION=$selection
 }
 
 validate_project_name() {
@@ -130,29 +130,94 @@ select_features_opt() {
   if [[ ${checked[6]} -eq 1 ]]; then USE_NUMBER_LIB=true; else USE_NUMBER_LIB=false; fi
 }
 
-get_user_input() {
-  if [[ -n "${1:-}" ]]; then PROJECT_NAME="$1"; fi
-
-  while [[ -z "$PROJECT_NAME" ]]; do
-    print_banner
-    echo -e "${BOLD}${YELLOW}?${RESET} ${BOLD}Enter project name ${RESET}${CYAN}(lowercase, no spaces)${RESET}: "
-    read -r input < /dev/tty
+select_location_opt() {
+  local options=("Current Directory (./)" "New Sub-directory" "Custom Path")
+  local selection=0
+  
+  tput civis
+  while true; do
+    for ((i=0; i<${#options[@]}; i++)); do
+      tput el
+      if [[ $i -eq $selection ]]; then
+        echo -e "${GREEN}❯ ${options[$i]}${RESET}"
+      else
+        echo -e "  ${options[$i]}"
+      fi
+    done
     
-    if [[ -z "$input" ]]; then
-       log_warn "Name cannot be empty."
-    elif [[ "$(validate_project_name "$input")" == "invalid" ]]; then
-       log_warn "Invalid name. Use [a-z0-9_-] only."
-    else
-       PROJECT_NAME="$input"
+    read -r -s -n 1 key < /dev/tty
+    if [[ "$key" == $'\x1b' ]]; then
+        read -r -s -n 2 key < /dev/tty
+        if [[ "$key" == "[A" ]]; then
+            ((selection--)); if [[ $selection -lt 0 ]]; then selection=2; fi
+        elif [[ "$key" == "[B" ]]; then
+             ((selection++)); if [[ $selection -gt 2 ]]; then selection=0; fi
+        fi
+        tput cuu 3
+    elif [[ "$key" == "" ]]; then break
+    else tput cuu 3
     fi
   done
-  PROJECT_DIR="$(pwd)/$PROJECT_NAME"
+  tput cnorm
+  LAST_SELECTION=$selection
+}
+
+get_user_input() {
+  print_banner
+  
+  # Location Selection
+  echo -e "${BOLD}${YELLOW}?${RESET} ${BOLD}Where should the project be created?${RESET}"
+  select_location_opt
+  local loc_choice=$LAST_SELECTION
+  
+  if [[ "$loc_choice" -eq 0 ]]; then
+    PROJECT_DIR=$(pwd)
+    PROJECT_NAME=$(basename "$PROJECT_DIR")
+    if [[ "$PROJECT_NAME" == "." ]]; then PROJECT_NAME=$(basename "$(pwd -P)"); fi
+  elif [[ "$loc_choice" -eq 2 ]]; then
+    while true; do
+      echo -e "\n${BOLD}${YELLOW}?${RESET} ${BOLD}Enter custom path ${RESET}${CYAN}(e.g. ~/code/my-app)${RESET}: "
+      read -r input < /dev/tty
+      
+      if [[ -z "$input" ]]; then
+        log_warn "Path cannot be empty."
+        continue
+      fi
+
+      # Expand tilde
+      local expanded_path="${input/#\~/$HOME}"
+      
+      # Convert to absolute path
+      if [[ "$expanded_path" != /* ]]; then
+        expanded_path="$(pwd)/$expanded_path"
+      fi
+
+      PROJECT_DIR="$expanded_path"
+      PROJECT_NAME=$(basename "$PROJECT_DIR")
+      break
+    done
+  else
+    if [[ -n "${1:-}" ]]; then PROJECT_NAME="$1"; fi
+    while [[ -z "$PROJECT_NAME" ]]; do
+      echo -e "\n${BOLD}${YELLOW}?${RESET} ${BOLD}Enter project name ${RESET}${CYAN}(lowercase, no spaces)${RESET}: "
+      read -r input < /dev/tty
+      
+      if [[ -z "$input" ]]; then
+         log_warn "Name cannot be empty."
+      elif [[ "$(validate_project_name "$input")" == "invalid" ]]; then
+         log_warn "Invalid name. Use [a-z0-9_-] only."
+      else
+         PROJECT_NAME="$input"
+      fi
+    done
+    PROJECT_DIR="$(pwd)/$PROJECT_NAME"
+  fi
 
   # Language Selection
   echo ""
   echo -e "${BOLD}${YELLOW}?${RESET} ${BOLD}Select Language:${RESET} ${CYAN}(Use arrow keys)${RESET}"
   select_language_opt
-  local lang_choice=$?
+  local lang_choice=$LAST_SELECTION
   
   if [[ "$lang_choice" -eq 1 ]]; then
     IS_TS=true

@@ -24,6 +24,7 @@ USE_DATE_LIB=true
 USE_NUMBER_LIB=true
 START_TIME=$(date +%s)
 SPINNER_PID=""
+LAST_SELECTION=0
 
 # Icons
 ICON_CHECK="✅"
