@@ -2,6 +2,8 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/Vue.js-Active-4FC08D?style=for-the-badge&logo=vue.js&logoColor=white" alt="Vue.js Support" />
+  <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black" alt="JavaScript" />
+  <img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
   <img src="https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white" alt="Vite Support" />
   <img src="https://img.shields.io/badge/Platform-Scalable-blue?style=for-the-badge" alt="Scalable Architecture" />
 </p>
@@ -22,6 +24,19 @@
 </p>
 
 **Vue Architect** is a premium CLI scaffolding tool designed to transform how you start Vue.js projects. It automates the creation of a **production-ready, enterprise-grade architecture** in seconds, built on a scalable platform-agnostic core.
+
+---
+
+## 📚 Table of Contents
+
+- [The Scalable Architecture](#-the-scalable-architecture)
+- [Key Features](#-key-features)
+- [Platform Internals](#-platform-internals-for-developers)
+- [Supported Platforms](#-supported-platforms)
+- [Quick Start](#-quick-start)
+- [Project Anatomy](#-project-anatomy)
+- [Support & Connect](#-support--connect)
+- [License](#-license)
 
 ---
 
@@ -54,6 +69,16 @@ If you are looking to modify the tool or understand how it works, here is the te
     - `generators.sh`: Orchestrates the assembly of the source tree.
     - `versions/`: Houses the version profiles for different environments.
 - **[resources/vue/](file:///Users/jissjohnson/code/vue-architect/resources/vue/)**: The actual blueprint files used during scaffolding.
+
+---
+
+## 💻 Supported Platforms
+
+- **macOS**: ✅ Fully Supported (Primary Development Platform)
+- **Linux**: 🚧 Coming Soon
+- **Windows**: 🚧 Coming Soon
+
+*We are actively working on cross-platform compatibility to bring the Architect experience to all environments.*
 
 ---
 
@@ -91,8 +116,17 @@ Every project generated follows this professional structural pattern:
 
 ## 🤝 Support & Connect
 
-- **Portfolio**: [jissjohnson.info](https://jissjohnson.info)
-- **Support**: [Buy me a coffee ☕](https://www.buymeacoffee.com/jissjohnson)
+<p align="center">
+  <b>Portfolio</b>: <a href="https://jissjohnson.info">jissjohnson.info</a>
+  <br>
+  <br>
+  <b>Support</b>:
+  <br>
+  <br>
+  <a href="https://www.buymeacoffee.com/jissjohnson">
+    <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" width="180" />
+  </a>
+</p>
 
 ---
 
