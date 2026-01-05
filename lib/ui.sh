@@ -69,8 +69,8 @@ validate_project_name() {
 }
 
 select_features_opt() {
-  local options=("Vue Router" "Pinia" "Tailwind CSS" "ESLint" "Prettier")
-  local checked=(1 1 1 1 1)
+  local options=("Vue Router" "Pinia" "Tailwind CSS" "ESLint" "Prettier" "Date Library (date-fns)" "Number Library (numeral)")
+  local checked=(1 1 1 1 1 1 1)
   local selection=0
   
   tput civis # Hide cursor
@@ -126,6 +126,8 @@ select_features_opt() {
   if [[ ${checked[2]} -eq 1 ]]; then USE_TAILWIND=true; else USE_TAILWIND=false; fi
   if [[ ${checked[3]} -eq 1 ]]; then USE_ESLINT=true; else USE_ESLINT=false; fi
   if [[ ${checked[4]} -eq 1 ]]; then USE_PRETTIER=true; else USE_PRETTIER=false; fi
+  if [[ ${checked[5]} -eq 1 ]]; then USE_DATE_LIB=true; else USE_DATE_LIB=false; fi
+  if [[ ${checked[6]} -eq 1 ]]; then USE_NUMBER_LIB=true; else USE_NUMBER_LIB=false; fi
 }
 
 get_user_input() {

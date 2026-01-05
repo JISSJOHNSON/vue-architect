@@ -5,60 +5,13 @@
 write_vite_config() {
   local ext="js"
   if $IS_TS; then ext="ts"; fi
-  
-  cat > "vite.config.$ext" <<EOF
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
-import path from 'path'
-
-export default defineConfig({
-  plugins: [vue()],
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src'),
-    },
-  },
-})
-EOF
+  cp "$ARCHITECT_ROOT/resources/vue/vite.config.template" "vite.config.$ext"
 }
 
 write_tailwind_config() {
   if ! $USE_TAILWIND; then return; fi
-
-  cat > tailwind.config.js <<EOF
-/** @type {import('tailwindcss').Config} */
-export default {
-  content: [
-    "./index.html",
-    "./src/**/*.{vue,js,ts,jsx,tsx}",
-  ],
-  theme: {
-    extend: {
-      colors: {
-        primary: {
-          50: 'var(--color-primary-50)',
-          100: 'var(--color-primary-100)',
-          500: 'var(--color-primary-500)',
-          600: 'var(--color-primary-600)',
-          900: 'var(--color-primary-900)',
-        },
-        background: 'var(--color-background)',
-        text: 'var(--color-text)',
-      },
-    },
-  },
-  plugins: [],
-}
-EOF
-
-  cat > postcss.config.js <<EOF
-export default {
-  plugins: {
-    tailwindcss: {},
-    autoprefixer: {},
-  },
-}
-EOF
+  cp "$ARCHITECT_ROOT/resources/vue/tailwind.config.template" "tailwind.config.js"
+  cp "$ARCHITECT_ROOT/resources/vue/postcss.config.template" "postcss.config.js"
 }
 
 write_eslint_config() {
@@ -139,410 +92,176 @@ EOF
 }
 
 write_tsconfig() {
-  cat > tsconfig.json <<EOF
-{
-  "extends": "@vue/tsconfig/tsconfig.dom.json",
-  "include": ["env.d.ts", "src/**/*", "src/**/*.vue"],
-  "exclude": ["src/**/__tests__/*"],
-  "compilerOptions": {
-    "moduleResolution": "bundler",
-    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["./src/*"]
-    }
-  }
-}
-EOF
+  cp "$ARCHITECT_ROOT/resources/vue/tsconfig.json.template" "tsconfig.json"
   cat > env.d.ts <<EOF
 /// <reference types="vite/client" />
 EOF
 }
 
 write_jsconfig() {
-  cat > jsconfig.json <<EOF
-{
-  "compilerOptions": {
-    "target": "esnext",
-    "module": "esnext",
-    "moduleResolution": "node",
-    "strict": false,
-    "jsx": "preserve",
-    "sourceMap": true,
-    "resolveJsonModule": true,
-    "esModuleInterop": true,
-    "lib": ["esnext", "dom"],
-    "baseUrl": ".",
-    "paths": { "@/*": ["src/*"] }
-  },
-  "include": ["src/**/*", "tests/**/*"],
-  "exclude": ["node_modules", "dist"]
-}
-EOF
+  cp "$ARCHITECT_ROOT/resources/vue/jsconfig.json.template" "jsconfig.json"
 }
 
 write_code_files() {
-  log_info "Writing source files..."
+  log_info "Writing professional source files..."
   local ext="js"
   if $IS_TS; then ext="ts"; fi
 
+  local v_res="$ARCHITECT_ROOT/resources/vue"
+  local app_lang=""
+  if $IS_TS; then app_lang=' lang="ts"'; fi
+
+  # .env & .env.example
+  generate_from_template "$v_res/.env.template" ".env" "PROJECT_NAME" "$PROJECT_NAME"
+  cp ".env" ".env.example"
+
   # index.html
-  cat > index.html <<EOF
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>${PROJECT_NAME}</title>
-  </head>
-  <body>
-    <div id="app"></div>
-    <script type="module" src="/src/main.${ext}"></script>
-  </body>
-</html>
-EOF
+  generate_from_template "$v_res/index.html.template" "index.html" \
+    "PROJECT_NAME" "$PROJECT_NAME" \
+    "EXT" "$ext"
 
-  # src/style.css
-  if $USE_TAILWIND; then
-      cat > src/style.css <<EOF
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+  # Constants
+  generate_from_template "$v_res/src/constants/index.template" "src/constants/index.$ext"
 
-@layer base {
-  :root {
-    --color-background: #ffffff;
-    --color-text: #1a1a1a;
-    --color-primary-50: #f0f9ff;
-    --color-primary-100: #e0f2fe;
-    --color-primary-500: #0ea5e9;
-    --color-primary-600: #0284c7;
-    --color-primary-900: #0c4a6e;
-  }
-}
-EOF
+  # Helpers
+  # Storage Helper
+  generate_from_template "$v_res/src/helpers/storage.helper.template" "src/helpers/storage.helper.$ext"
+
+  # Format Helper (with conditional library logic)
+  local date_import=""
+  local date_logic="return new Date(date).toLocaleDateString()"
+  if $USE_DATE_LIB; then
+    date_import="import { format } from 'date-fns'"
+    date_logic="return format(new Date(date), pattern)"
+  fi
+
+  local num_import=""
+  local num_logic="return number.toLocaleString()"
+  if $USE_NUMBER_LIB; then
+    num_import="import numeral from 'numeral'"
+    num_logic="return numeral(number).format(pattern)"
+  fi
+
+  generate_from_template "$v_res/src/helpers/format.helper.template" "src/helpers/format.helper.$ext" \
+    "DATE_IMPORT" "$date_import" \
+    "DATE_FORMAT_LOGIC" "$date_logic" \
+    "NUMBER_IMPORT" "$num_import" \
+    "NUMBER_FORMAT_LOGIC" "$num_logic"
+
+  # API & Services
+  generate_from_template "$v_res/src/api/index.template" "src/api/index.$ext"
+  generate_from_template "$v_res/src/services/user.service.template" "src/services/user.service.$ext"
+
+  # Styles
+  generate_from_template "$v_res/src/assets/styles/main.css.template" "src/assets/styles/main.css"
+
+  # Main Entry
+  local router_import=""
+  local router_use=""
+  if $USE_ROUTER; then
+    router_import="import router from './router'"
+    router_use="app.use(router)"
+  fi
+
+  local pinia_import=""
+  local pinia_use=""
+  if $USE_PINIA; then
+    pinia_import="import { createPinia } from 'pinia'"
+    pinia_use="app.use(createPinia())"
+  fi
+
+  generate_from_template "$v_res/src/main.template" "src/main.$ext" \
+    "ROUTER_IMPORT" "$router_import" \
+    "ROUTER_USE" "$router_use" \
+    "PINIA_IMPORT" "$pinia_import" \
+    "PINIA_USE" "$pinia_use"
+
+  # App Entry
+  local app_script=""
+  local app_template=""
+  if $USE_ROUTER; then
+    app_script="import { useRoute } from 'vue-router'\nimport MainLayout from '@/layouts/MainLayout.vue'\n\nconst route = useRoute()"
+    app_template="  <component :is=\"route.meta.layout || MainLayout\">\n    <router-view />\n  </component>"
   else
-      cat > src/style.css <<EOF
-:root {
-  --color-background: #ffffff;
-  --color-text: #1a1a1a;
-  --color-primary-500: #0ea5e9;
-  --color-primary-600: #0284c7;
-}
-body {
-  font-family: system-ui, -apple-system, sans-serif;
-  background-color: var(--color-background);
-  color: var(--color-text);
-  margin: 0;
-}
-EOF
+    app_script="import MainLayout from '@/layouts/MainLayout.vue'\nimport Home from '@/views/Home.vue'"
+    app_template="  <MainLayout>\n    <Home />\n  </MainLayout>"
   fi
 
-  # src/main.ts/js
-  local imports="import { createApp } from 'vue'
-"
-  local setups="const app = createApp(App)
-"
-
-  if $USE_PINIA; then 
-    imports="${imports}import { createPinia } from 'pinia'
-"
-    setups="${setups}app.use(createPinia())
-"
-  fi
-  
-  imports="${imports}import App from './App.vue'
-"
-  
-  if $USE_ROUTER; then
-    imports="${imports}import router from './router'
-"
-    setups="${setups}app.use(router)
-"
-  fi
-  
-  imports="${imports}import './style.css'
-"
-  setups="${setups}app.mount('#app')"
-
-  echo -e "$imports\n$setups" > "src/main.$ext"
-
-  # src/App.vue
-  if $USE_ROUTER; then
-      cat > src/App.vue <<EOF
-<script setup${IS_TS:+ lang="ts"}></script>
-<template>
-  <router-view />
-</template>
-EOF
-  else
-      cat > src/App.vue <<EOF
-<script setup${IS_TS:+ lang="ts"}>
-import DefaultLayout from '@/layouts/DefaultLayout.vue'
-import Home from '@/views/Home.vue'
-</script>
-<template>
-  <DefaultLayout>
-    <Home />
-  </DefaultLayout>
-</template>
-EOF
-  fi
-
-  # src/router/index.ts/js
-  if $USE_ROUTER; then
-      local router_content=""
-      if $IS_TS; then
-        router_content="import { createRouter, createWebHistory } from 'vue-router'
-import DefaultLayout from '@/layouts/DefaultLayout.vue'
-import Home from '@/views/Home.vue'
-
-const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
-  routes: [
-    {
-      path: '/',
-      component: DefaultLayout,
-      children: [
-        { path: '', name: 'home', component: Home }
-      ]
-    }
-  ]
-})
-export default router"
-      else
-        router_content="import { createRouter, createWebHistory } from 'vue-router'
-import DefaultLayout from '@/layouts/DefaultLayout.vue'
-import Home from '@/views/Home.vue'
-
-const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
-  routes: [
-    {
-      path: '/',
-      component: DefaultLayout,
-      children: [
-        { path: '', name: 'home', component: Home }
-      ]
-    }
-  ]
-})
-export default router"
-      fi
-      
-      echo "$router_content" > "src/router/index.$ext"
-  fi
+  generate_from_template "$v_res/src/App.vue.template" "src/App.vue" \
+    "LANG" "$app_lang" \
+    "SCRIPT_CONTENT" "$(echo -e "$app_script")" \
+    "TEMPLATE_CONTENT" "$(echo -e "$app_template")"
 
   # Components
-  # Layout
-  local header_class="p-4 border-b"
-  local h1_class="text-xl font-bold"
-  local footer_class="p-4 bg-gray-100 text-center text-sm"
+  generate_from_template "$v_res/src/components/base/BaseButton.vue.template" "src/components/base/BaseButton.vue" "LANG" "$app_lang"
   
-  if $USE_TAILWIND; then
-      h1_class="$h1_class text-primary-600"
-      footer_class="$footer_class" # already good
-  else
-      h1_class=""
-      header_class="padding: 1rem; border-bottom: 1px solid #eee;"
-      footer_class="padding: 1rem; background: #f0f0f0; text-align: center;"
-  fi
-
-  # For non-tailwind, we invoke inline styles or simple classes if css defined
-  # To keep it simple, if no tailwind, we used simple css in style.css.
-  # Let's use classes assuming custom css covered basic things or just use inline for simplicity in "no tailwind" mode.
+  local brand_link="<a href=\"/\" class=\"brand\">$PROJECT_NAME</a>"
+  local nav_links_html="<a href=\"/\" class=\"nav-link\">Home</a>\n        <a href=\"/about\" class=\"nav-link\">About</a>"
   
-  cat > src/layouts/DefaultLayout.vue <<EOF
-<script setup${IS_TS:+ lang="ts"}>
-import Footer from '@/components/common/Footer.vue'
-</script>
-<template>
-  <div class="min-h-screen flex flex-col">
-    <header class="$header_class">
-      <h1 class="$h1_class">${PROJECT_NAME}</h1>
-    </header>
-    <main class="flex-grow">
-      <slot /> <!-- Allows usage as wrapper or with router -->
-      ${USE_ROUTER:+<router-view />} 
-    </main>
-    <Footer />
-  </div>
-</template>
-<style scoped>
-/* Basic backup styles if no tailwind */
-.flex { display: flex; }
-.flex-col { flex-direction: column; }
-.min-h-screen { min-height: 100vh; }
-.flex-grow { flex-grow: 1; }
-</style>
-EOF
-  # Note: The above slot/router logic might duplicate if I'm not careful.
-  # If Router: App calls <router-view>, router loads DefaultLayout which calls <router-view> (if nested) or just Home.
-  # In my router config: component: DefaultLayout, children: [Home]. So DefaultLayout needs <router-view>.
-  # If No Router: App calls <DefaultLayout><Home/></DefaultLayout>. So DefaultLayout needs <slot/>.
-  
-  # Let's refine DefaultLayout:
   if $USE_ROUTER; then
-    cat > src/layouts/DefaultLayout.vue <<EOF
-<script setup${IS_TS:+ lang="ts"}>
-import Footer from '@/components/common/Footer.vue'
-</script>
-<template>
-  <div class="layout">
-    <header class="header">
-      <h1 class="title">${PROJECT_NAME}</h1>
-    </header>
-    <main class="main">
-      <router-view />
-    </main>
-    <Footer />
-  </div>
-</template>
-<style scoped>
-/* Minimal styles compatible with or without Tailwind */
-.layout { min-height: 100vh; display: flex; flex-direction: column; }
-.header { padding: 1rem; border-bottom: 1px solid #eee; }
-.title { font-weight: bold; font-size: 1.25rem; }
-.main { flex-grow: 1; }
-${USE_TAILWIND:+
-.title { @apply text-primary-600; }
-.header { @apply p-4; }
-}
-</style>
-EOF
-  else
-    cat > src/layouts/DefaultLayout.vue <<EOF
-<script setup${IS_TS:+ lang="ts"}>
-import Footer from '@/components/common/Footer.vue'
-</script>
-<template>
-  <div class="layout">
-    <header class="header">
-      <h1 class="title">${PROJECT_NAME}</h1>
-    </header>
-    <main class="main">
-      <slot />
-    </main>
-    <Footer />
-  </div>
-</template>
-<style scoped>
-.layout { min-height: 100vh; display: flex; flex-direction: column; }
-.header { padding: 1rem; border-bottom: 1px solid #eee; }
-.title { font-weight: bold; font-size: 1.25rem; }
-.main { flex-grow: 1; }
-${USE_TAILWIND:+
-.title { @apply text-primary-600; }
-.header { @apply p-4; }
-}
-</style>
-EOF
+    brand_link="<router-link to=\"/\" class=\"brand\">$PROJECT_NAME</router-link>"
+    nav_links_html="<router-link v-for=\"item in navItems\" :key=\"item.path\" :to=\"item.path\" class=\"nav-link\">{{ item.name }}</router-link>"
   fi
-  # Note: Using @apply in style block is fine if postcss configured.
-  # If no tailwind, those apply lines are invalid CSS. 
-  # Actually, if I don't use tailwind, I shouldn't write @apply.
-  # I'll stick to classes.
-  
-  # Footer
-  cat > src/components/common/Footer.vue <<EOF
-<template>
-  <footer class="footer">
-    &copy; {{ new Date().getFullYear() }} ${PROJECT_NAME}. All rights reserved.
-  </footer>
-</template>
-<style scoped>
-.footer { padding: 1rem; background-color: #f3f4f6; text-align: center; font-size: 0.875rem; }
-</style>
-EOF
 
-  # Home View
-  local script_setup=""
-  local template_content=""
+  generate_from_template "$v_res/src/components/common/Navbar.vue.template" "src/components/common/Navbar.vue" \
+    "LANG" "$app_lang" \
+    "PROJECT_NAME" "$PROJECT_NAME" \
+    "BRAND_LINK" "$brand_link" \
+    "NAV_LINKS" "$(echo -e "$nav_links_html")"
+  generate_from_template "$v_res/src/components/common/Footer.vue.template" "src/components/common/Footer.vue" \
+    "PROJECT_NAME" "$PROJECT_NAME" \
+    "YEAR" "$(date +%Y)"
+
+  # Layouts
+  local layout_content="<slot />"
+  if $USE_ROUTER; then layout_content="<router-view />"; fi
+  generate_from_template "$v_res/src/layouts/MainLayout.vue.template" "src/layouts/MainLayout.vue" \
+    "LANG" "$app_lang" \
+    "CONTENT" "$layout_content"
+
+  # Router
+  generate_from_template "$v_res/src/router/guards/auth.guard.template" "src/router/guards/auth.guard.$ext"
+  cp "$v_res/src/router/index.template" "src/router/index.$ext"
+
+  # Views (Home, About, NotFound)
+  local home_script=""
+  local home_template=""
   
   if $USE_PINIA; then
-    script_setup="import { useCounterStore } from '@/stores/counter'
-const counter = useCounterStore()"
-    template_content="    <div class=\"card\">
-        <p class=\"mb-4\">Count: {{ counter.count }}</p>
-        <button @click=\"counter.increment()\" class=\"btn\">Increment</button>
-    </div>"
+    home_script="import { useCounterStore } from '@/stores/counter'\nconst counter = useCounterStore()"
+    home_template="    <div class=\"card\">\n        <p class=\"mb-4\">Count: {{ counter.count }}</p>\n        <BaseButton @click=\"counter.increment()\">Increment</BaseButton>\n    </div>"
   else
-    script_setup="import { ref } from 'vue'
-const count = ref(0)
-function increment() { count.value++ }"
-    template_content="    <div class=\"card\">
-        <p class=\"mb-4\">Count: {{ count }}</p>
-        <button @click=\"increment()\" class=\"btn\">Increment</button>
-    </div>"
+    home_script="import { ref } from 'vue'\nconst count = ref(0)\nfunction increment() { count.value++ }"
+    home_template="    <div class=\"card\">\n        <p class=\"mb-4\">Count: {{ count }}</p>\n        <BaseButton @click=\"increment()\">Increment</BaseButton>\n    </div>"
   fi
   
-  cat > src/views/Home.vue <<EOF
-<script setup${IS_TS:+ lang="ts"}>
-${script_setup}
-</script>
-<template>
-  <div class="home">
-    <h1 class="title">Welcome to ${PROJECT_NAME}</h1>
-    <p class="subtitle">Modular Vue.js Architecture</p>
-${template_content}
-  </div>
-</template>
-<style scoped>
-.home { padding: 2rem; max-width: 56rem; margin: 0 auto; text-align: center; }
-.title { font-size: 2.25rem; font-weight: bold; margin-bottom: 1rem; color: #0284c7; }
-.subtitle { font-size: 1.125rem; color: #374151; margin-bottom: 2rem; }
-.card { padding: 1.5rem; border: 1px solid #e5e7eb; border-radius: 0.5rem; background: white; display: inline-block; }
-.btn { padding: 0.5rem 1rem; background-color: #0ea5e9; color: white; border-radius: 0.25rem; border: none; cursor: pointer; }
-.btn:hover { background-color: #0284c7; }
-.mb-4 { margin-bottom: 1rem; }
-</style>
-EOF
+  generate_from_template "$v_res/src/views/Home.vue.template" "src/views/Home.vue" \
+    "LANG" "$app_lang" \
+    "PROJECT_NAME" "$PROJECT_NAME" \
+    "SCRIPT_SETUP" "$(echo -e "$home_script")" \
+    "TEMPLATE_CONTENT" "$(echo -e "$home_template")"
 
-  # src/stores/counter.ts/js
+  generate_from_template "$v_res/src/views/About.vue.template" "src/views/About.vue" "LANG" "$app_lang" "PROJECT_NAME" "$PROJECT_NAME"
+  generate_from_template "$v_res/src/views/NotFound.vue.template" "src/views/NotFound.vue" "LANG" "$app_lang"
+
+  # Pinia Store
   if $USE_PINIA; then
-    if $IS_TS; then
-      cat > src/stores/counter.ts <<EOF
-import { ref, computed } from 'vue'
-import { defineStore } from 'pinia'
-
-export const useCounterStore = defineStore('counter', () => {
-  const count = ref<number>(0)
-  const doubleCount = computed(() => count.value * 2)
-  function increment() { count.value++ }
-  return { count, doubleCount, increment }
-})
-EOF
-    else
-      cat > src/stores/counter.js <<EOF
-import { ref, computed } from 'vue'
-import { defineStore } from 'pinia'
-
-export const useCounterStore = defineStore('counter', () => {
-  const count = ref(0)
-  const doubleCount = computed(() => count.value * 2)
-  function increment() { count.value++ }
-  return { count, doubleCount, increment }
-})
-EOF
-    fi
+    local count_type=""
+    if $IS_TS; then count_type="<number>"; fi
+    generate_from_template "$v_res/src/stores/counter.template" "src/stores/counter.$ext" \
+      "COUNT_TYPE" "$count_type"
   fi
+
+  # Utility sample
+  echo "export const formatDate = (date) => new Date(date).toLocaleDateString()" > "src/utils/index.$ext"
+
+  # README
+  # Remove the generated README.md if it exists from initializations
+  rm -f README.md
+  generate_from_template "$v_res/README.md.template" "README.md" "PROJECT_NAME" "$PROJECT_NAME"
 
   # .editorconfig
-  cat > .editorconfig <<EOF
-root = true
-
-[*]
-charset = utf-8
-indent_style = space
-indent_size = 2
-end_of_line = lf
-insert_final_newline = true
-trim_trailing_whitespace = true
-
-[*.md]
-trim_trailing_whitespace = false
-EOF
+  cp "$v_res/.editorconfig.template" ".editorconfig"
 
   # Configs
   if $IS_TS; then write_tsconfig; else write_jsconfig; fi

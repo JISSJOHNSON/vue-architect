@@ -43,9 +43,11 @@ install_dependencies() {
   log_header "Dependency Installation"
   
   start_spinner "Installing Vue Core"
-  local CORE_DEPS="vue@$VUE_VERSION"
+  local CORE_DEPS="vue@$VUE_VERSION axios"
   if $USE_ROUTER; then CORE_DEPS="$CORE_DEPS vue-router@$ROUTER_VERSION"; fi
   if $USE_PINIA; then CORE_DEPS="$CORE_DEPS pinia@$PINIA_VERSION"; fi
+  if $USE_DATE_LIB; then CORE_DEPS="$CORE_DEPS date-fns"; fi
+  if $USE_NUMBER_LIB; then CORE_DEPS="$CORE_DEPS numeral"; fi
 
   if ! npm install $CORE_DEPS > /dev/null 2>&1; then
      stop_spinner
@@ -77,18 +79,24 @@ generate_structure() {
   log_header "Scaffolding Architecture"
   
   local dirs=(
+    "src/api"
     "src/assets/images"
-    "src/assets/fonts"
+    "src/assets/styles"
+    "src/components/base"
     "src/components/common"
     "src/components/features"
-    "src/layouts"
-    "src/views"
+    "src/composables"
     "src/constants"
+    "src/directives"
+    "src/helpers"
+    "src/layouts"
+    "src/router/guards"
+    "src/services"
+    "src/stores"
+    "src/types"
     "src/utils"
+    "src/views"
   )
-  
-  if $USE_ROUTER; then dirs+=("src/router"); fi
-  if $USE_PINIA; then dirs+=("src/stores"); fi
 
   for dir in "${dirs[@]}"; do
     mkdir -p "$dir"

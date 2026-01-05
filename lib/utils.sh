@@ -78,6 +78,39 @@ fatal_error() {
   exit 1
 }
 
+# --- Templating ---
+generate_from_template() {
+  local template_path="$1"
+  local output_path="$2"
+  shift 2
+  
+  if [[ ! -f "$template_path" ]]; then
+    fatal_error "Template not found: $template_path"
+  fi
+
+  local content
+  content=$(cat "$template_path")
+  
+  while [[ $# -gt 0 ]]; do
+    local key="$1"
+    local value="$2"
+    # value may contain newlines, so we use a temporary file or a better way to replace
+    # Simple sed "s|key|value|g" fails if value has newlines.
+    # We can use a python one-liner or perl if available, or just use a loop with bash.
+    
+    # Using python for robust replacement if available, else fallback to something else
+    if command -v python3 &> /dev/null; then
+      content=$(python3 -c "import sys; print(sys.argv[1].replace('{{' + sys.argv[2] + '}}', sys.argv[3]), end='')" "$content" "$key" "$value")
+    else
+      # Fallback for simple cases (one line)
+      content=$(echo "$content" | sed "s|{{$key}}|$value|g")
+    fi
+    shift 2
+  done
+  
+  echo -n "$content" > "$output_path"
+}
+
 cleanup() {
   local exit_code=$?
   # Kill spinner if running

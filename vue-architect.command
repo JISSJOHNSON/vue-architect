@@ -15,6 +15,7 @@ set -o pipefail
 
 # --- Source Modules ---
 # Order matters: Constants -> Utils -> UI -> Generators -> Actions
+export ARCHITECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source ./lib/constants.sh
 source ./lib/utils.sh
 source ./lib/ui.sh
