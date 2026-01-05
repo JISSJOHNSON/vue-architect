@@ -1,49 +1,18 @@
 #!/bin/bash
-cd "$(dirname "$0")" || exit 1
 
 # ==============================================================================
-#  Vue Architect
+#  Vue Architect (Command Wrapper)
 #  ------------------------------------------------------------------------------
-#  Author:  Jiss Johnson
-#  Purpose: Scaffolds a production-ready Vue.js application with JS/TS support.
+#  Enables double-click execution on macOS.
 # ==============================================================================
 
-# --- Strict Mode & Safety ---
-set -o errexit
-set -o nounset
-set -o pipefail
+# Ensure we are in the script's directory
+cd "$(dirname "$0")"
 
-# --- Source Modules ---
-# Order matters: Constants -> Utils -> UI -> Generators -> Actions
-export ARCHITECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source ./lib/constants.sh
-source ./lib/utils.sh
-source ./lib/ui.sh
-source ./lib/generators.sh
-source ./lib/actions.sh
-
-# --- Main Execution Flow ---
-main() {
-  print_banner
-  check_requirements
-  get_user_input "${1:-}"
-  
-  setup_directory
-  initialize_project
-  install_dependencies
-  generate_structure
-  
-  write_vite_config
-  write_tailwind_config
-  write_eslint_config
-  write_code_files
-  
-  update_scripts
-  setup_git
-  
-  print_summary "${1:-}"
-  print_support
-}
-
-# Start
-main "${1:-}"
+# Execute the main architect script
+if [[ -f "./architect.sh" ]]; then
+    ./architect.sh
+else
+    echo "Error: architect.sh not found in $(pwd)"
+    exit 1
+fi

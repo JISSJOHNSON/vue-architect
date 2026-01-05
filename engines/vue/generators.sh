@@ -1,6 +1,8 @@
-#!/bin/bash
-
-# Generates configuration files and source code based on selected features.
+# ==============================================================================
+#  Vue Engine Generators
+#  ------------------------------------------------------------------------------
+#  Handles the physical creation of files from the resources/ directory.
+# ==============================================================================
 
 write_vite_config() {
   local ext="js"
@@ -14,11 +16,9 @@ write_tailwind_config() {
   cp "$ARCHITECT_ROOT/resources/vue/postcss.config.template" "postcss.config.js"
 }
 
-write_eslint_config() {
-  if ! $USE_ESLINT; then
-     # Even if no ESLint, we might want Prettier
-     if $USE_PRETTIER; then
-       cat > .prettierrc <<EOF
+write_prettier_config() {
+  if ! $USE_PRETTIER; then return; fi
+  cat > .prettierrc <<EOF
 {
   "semi": false,
   "singleQuote": true,
@@ -26,7 +26,11 @@ write_eslint_config() {
   "trailingComma": "es5"
 }
 EOF
-     fi
+}
+
+write_eslint_config() {
+  if ! $USE_ESLINT; then
+     write_prettier_config
      return
   fi
 
@@ -78,17 +82,7 @@ export default [
 ];
 "
   echo "$config_content" > eslint.config.js
-
-  if $USE_PRETTIER; then
-    cat > .prettierrc <<EOF
-{
-  "semi": false,
-  "singleQuote": true,
-  "tabWidth": 2,
-  "trailingComma": "es5"
-}
-EOF
-  fi
+  write_prettier_config
 }
 
 write_tsconfig() {
@@ -102,6 +96,9 @@ write_jsconfig() {
   cp "$ARCHITECT_ROOT/resources/vue/jsconfig.json.template" "jsconfig.json"
 }
 
+# --- Main Source Generator ---
+# This is the heart of the Vue engine. It compiles all user selections 
+# and triggers the generation of the entire source tree.
 write_code_files() {
   log_header "Engineered Source Generation"
   log_info "Transpiling professional source files..."
