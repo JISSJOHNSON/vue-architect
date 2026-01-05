@@ -1,10 +1,11 @@
 # Vue Architect 🏗️
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Vue.js-35495E?style=for-the-badge&logo=vue.js&logoColor=4FC08D" alt="Vue.js Production Framework" />
-  <img src="https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white" alt="Vite Fast Build Tool" />
-  <img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript Support" />
-  <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS Design System" />
+  <img src="https://img.shields.io/badge/Vue.js-Active-4FC08D?style=for-the-badge&logo=vue.js&logoColor=white" alt="Vue.js Support" />
+  <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black" alt="JavaScript" />
+  <img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white" alt="Vite Support" />
+  <img src="https://img.shields.io/badge/Platform-Scalable-blue?style=for-the-badge" alt="Scalable Architecture" />
 </p>
 
 <p align="center">
@@ -22,42 +23,69 @@
   </a>
 </p>
 
-**Vue Architect** is a premium CLI scaffolding tool designed to transform how you start Vue.js projects. It automates the creation of a **production-ready, enterprise-grade architecture** in seconds, allowing you to focus on building features rather than configuring boilerplate.
+**Vue Architect** is a premium CLI scaffolding tool designed to transform how you start Vue.js projects. It automates the creation of a **production-ready, enterprise-grade architecture** in seconds, built on a scalable platform-agnostic core.
 
 ---
 
-## 🔥 Why Vue Architect?
+## 📚 Table of Contents
 
-Standard starters often leave you with a flat structure that quickly becomes unmanageable. **Vue Architect** implements a **Layered Architecture (Clean Architecture)** principles, ensuring your codebase remains decoupled, testable, and scalable from Day 1.
-
-### 🌟 Key Highlights
-- **🚀 Ultra-Fast Setup**: Go from zero to a running development server in under 10 seconds.
-- **🏗️ Pro-Grade Architecture**: Logical separation of concerns with dedicated layers for API, Services, Models, and UI.
-- **🎨 Curated Design System**: Built-in Atomic Design support with `Base` components and pre-configured Tailwind tokens.
-- **🛠️ Developer-First DX**: Interactive terminal menus with arrow-key navigation and multi-select feature toggling.
-- **🔋 Batteries Included**: Pre-configured Axios interceptors, Storage helpers, and library-aware Formatters.
-
----
-
-## 🚀 Feature Matrix
-
-| Feature | Included | Description |
-| :--- | :---: | :--- |
-| **Vue 3 (Composition API)** | ✅ | The modern standard for reactive web development. |
-| **Vite 6** | ✅ | Lighting fast HMR and optimized production builds. |
-| **TypeScript / JS** | ✅ | Full support for both, including strict TS configurations. |
-| **Tailwind CSS 3** | ➕ | Optional utility-first styling with a professional base layer. |
-| **Vue Router** | ➕ | Pre-configured layouts and navigation guards. |
-| **Pinia** | ➕ | Intuitive, modular state management. |
-| **ESLint & Prettier** | ➕ | Industry-standard code style and quality enforcement. |
-| **Helper Libraries** | ➕ | Integration for `date-fns` (Date) and `numeral` (Currency). |
+- [The Scalable Architecture](#-the-scalable-architecture)
+- [Key Features](#-key-features)
+- [Platform Internals](#-platform-internals-for-developers)
+- [Supported Platforms](#-supported-platforms)
+- [Quick Start](#-quick-start)
+- [Project Anatomy](#-project-anatomy)
+- [Support & Connect](#-support--connect)
+- [License](#-license)
 
 ---
 
-## 🛠️ Quick Start Guide
+## 🏗️ The Scalable Architecture
 
-### 1. Simple Installation
-No global installation required. Just clone and run.
+While focusing on **Vue.js**, this tool is built on a decoupled "Engine" architecture. This means the core scaffolding logic is separated from framework-specific templates, ensuring the project structure remains clean, modular, and infinitely extensible.
+
+---
+
+## 🌟 Key Features
+
+- **🚀 Professional Vue Scaffolding**: Expertly architected projects for **Vue.js** (JS/TS) with a production-grade directory structure.
+- **📦 Package Version Management**: Choose between **Stable**, **Latest**, or **Legacy** version profiles, or provide **Manual Overrides** for specific packages.
+- **🏗️ Layered Architecture**: Implements a clean separation of concerns (API, Services, Components, Stores) by default.
+- **🛠️ Extensible Core**: Centralized UI and Utility libraries ensure consistent behavior and reliability.
+- **🔋 Batteries Included**: Pre-configured with Vite, Tailwind CSS, ESLint, Prettier, and essential development helpers.
+
+---
+
+## 🛠️ Platform Internals (For Developers)
+
+If you are looking to modify the tool or understand how it works, here is the technical breakdown:
+
+- **[core/](file:///Users/jissjohnson/code/vue-architect/core/)**: The brain of the platform.
+    - `ui.sh`: Handles standard colors, spinners, and interactive keyboard menus.
+    - `utils.sh`: Contains the Python-based templating engine and system validators.
+    - `init.sh`: Manages the common project creation and Git rituals.
+- **[engines/vue/](file:///Users/jissjohnson/code/vue-architect/engines/vue/)**: The Vue-specific logic.
+    - `actions.sh`: Defines how dependencies are installed.
+    - `generators.sh`: Orchestrates the assembly of the source tree.
+    - `versions/`: Houses the version profiles for different environments.
+- **[resources/vue/](file:///Users/jissjohnson/code/vue-architect/resources/vue/)**: The actual blueprint files used during scaffolding.
+
+---
+
+## 💻 Supported Platforms
+
+- **macOS**: ✅ Fully Supported (Primary Development Platform)
+- **Linux**: 🚧 Coming Soon
+- **Windows**: 🚧 Coming Soon
+
+*We are actively working on cross-platform compatibility to bring the Architect experience to all environments.*
+
+---
+
+## 🚀 Quick Start
+
+### 1. Installation
+Clone the repository to your local machine:
 
 ```bash
 git clone https://github.com/jissjohnson/vue-architect.git
@@ -66,64 +94,45 @@ chmod +x vue-architect.command
 ```
 
 ### 2. Launch the Architect
-Run the interactive command-line interface:
+Run the main entry point:
 
 ```bash
 ./vue-architect.command
 ```
-*(On macOS, you can also just double-click the file in Finder)*
-
-### 3. Automated Configuration
-The tool will guide you through:
-- **Location**: Current directory, a new folder, or a custom target path.
-- **Stack**: Choose between JavaScript and TypeScript.
-- **Features**: Toggle Router, Pinia, Tailwind, and more using **Space** to select.
+*(On macOS, you can simply **double-click** `vue-architect.command` in Finder)*
 
 ---
 
-## 📂 The Architected Anatomy
+## 📂 Project Anatomy
+Every project generated follows this professional structural pattern:
 
-Every project generated follows a strict, high-performance structural pattern:
-
-```text
-src/
-├── api/          # 📡 Axios instance with Auth & Error interceptors
-├── assets/       # 🎨 Global styles, images, and brand assets
-├── components/   # 🧩 Atomic UI components (base/common/features)
-├── constants/    # 🔑 Global constants, HTTP codes, and configurations
-├── helpers/      # 🧙 StorageHelper, Formatters, and logic wrappers
-├── layouts/      # 🖼️ View structures (Main, Auth, Dashboard)
-├── router/       # 🚦 Navigation logic and dynamic guards
-├── services/     # ⚙️ Business logic and API coordination layer
-├── stores/       # 📦 State persistence using Pinia
-└── views/        # 📄 Routeable page components
-```
+- **api/**: Axios instance with centralized Auth/Error interceptors.
+- **services/**: Business logic layer (The "brain" of your app).
+- **components/**: Atomic UI separation (base, common, feature-specific).
+- **helpers/**: Secure wrappers for Storage, Date formatting, and Numerics.
+- **views/**: Route-based page components.
 
 ---
 
-## 🛡️ Best Practices & Standards
+## 🤝 Support & Connect
 
-**Vue Architect** doesn't just give you files; it gives you a **standard**:
-- **Services Pattern**: Keeps components "thin" by moving logic to reusable service classes.
-- **Atomic Components**: `src/components/base` ensures UI consistency through small, reusable units.
-- **Helper Encapsulation**: Never touch `localStorage` or `date` logic directly; use the provided secure helpers.
-- **Flat Configs**: Uses the latest ESLint Flat Config and Prettier 3 for a modern linting experience.
-
----
-
-## 🤝 Community & Support
-
-- **Portfolio**: [Explore my work](https://jissjohnson.info)
-- **Issues**: [Report a bug or request a feature](https://github.com/jissjohnson/vue-architect/issues)
-- **Support**: [Buy me a coffee ☕](https://www.buymeacoffee.com/jissjohnson)
+<p align="center">
+  <b>Portfolio</b>: <a href="https://jissjohnson.info">jissjohnson.info</a>
+  <br>
+  <br>
+  <b>Support</b>:
+  <br>
+  <br>
+  <a href="https://www.buymeacoffee.com/jissjohnson">
+    <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" width="180" />
+  </a>
+</p>
 
 ---
 
 ## 📜 License
+Distributed under the **MIT License**. Check `LICENSE` for more information.
 
-Project is licensed under the **MIT License**. Feel free to use it for personal or commercial projects.
-
----
 <p align="center">
   Developed with ❤️ by <b>Jiss Johnson</b>
 </p>

@@ -3,4 +3,5 @@ node_modules/
 .idea/
 .vscode/
 *.log
-EOF
+test_output/
+dev_server.log

@@ -1,24 +1,81 @@
-#!/bin/bash
-
-# Generates configuration files and source code based on selected features.
+# ==============================================================================
+#  Vue Engine Generators
+#  ------------------------------------------------------------------------------
+#  Handles the physical creation of files from the resources/ directory.
+# ==============================================================================
 
 write_vite_config() {
   local ext="js"
   if $IS_TS; then ext="ts"; fi
-  cp "$ARCHITECT_ROOT/resources/vue/vite.config.template" "vite.config.$ext"
+  
+  local ui_plugin_import=""
+  local ui_plugin_use=""
+  
+  if [[ "$UI_LIBRARY" == "vuetify" ]]; then
+    ui_plugin_import="import vuetify from 'vite-plugin-vuetify'"
+    ui_plugin_use="vuetify({ autoImport: true }),"
+  fi
+
+  generate_from_template "$ARCHITECT_ROOT/resources/vue/vite.config.template" "vite.config.$ext" \
+    "UI_PLUGIN_IMPORT" "$ui_plugin_import" \
+    "UI_PLUGIN_USE" "$ui_plugin_use"
+}
+
+write_webpack_config() {
+  local ext="js"
+  local loader="babel-loader"
+  local options="options: { presets: ['@babel/preset-env'] }"
+  local resolve_exts="'.js', '.vue', '.json'"
+  if $IS_TS; then 
+    ext="ts"
+    loader="ts-loader"
+    options="options: { appendTsSuffixTo: [/\.vue$/] }"
+    resolve_exts="'.ts', '.js', '.vue', '.json'"
+  fi
+  generate_from_template "$ARCHITECT_ROOT/resources/vue/webpack.config.template" "webpack.config.cjs" \
+    "EXT" "$ext" \
+    "LOADER" "$loader" \
+    "OPTIONS" "$options" \
+    "RESOLVE_EXTENSIONS" "$resolve_exts"
+}
+
+write_rollup_config() {
+  local ext="js"
+  local ts_import=""
+  local ts_plugin=""
+  local resolve_exts="'.js', '.vue', '.json'"
+  if $IS_TS; then 
+    ext="ts"
+    ts_import="import typescript from '@rollup/plugin-typescript';"
+    ts_plugin="typescript(),"
+    resolve_exts="'.ts', '.js', '.vue', '.json'"
+  fi
+  generate_from_template "$ARCHITECT_ROOT/resources/vue/rollup.config.template" "rollup.config.js" \
+    "EXT" "$ext" \
+    "TS_IMPORT" "$ts_import" \
+    "TS_PLUGIN" "$ts_plugin" \
+    "RESOLVE_EXTENSIONS" "$resolve_exts"
+}
+
+write_build_config() {
+  log_info "Generating $BUILD_TOOL configuration..."
+  case $BUILD_TOOL in
+    "vite") write_vite_config ;;
+    "webpack") write_webpack_config ;;
+    "rollup") write_rollup_config ;;
+    "parcel") log_info "Parcel requires no explicit config file for this setup." ;;
+  esac
 }
 
 write_tailwind_config() {
   if ! $USE_TAILWIND; then return; fi
-  cp "$ARCHITECT_ROOT/resources/vue/tailwind.config.template" "tailwind.config.js"
-  cp "$ARCHITECT_ROOT/resources/vue/postcss.config.template" "postcss.config.js"
+  cp "$ARCHITECT_ROOT/resources/vue/tailwind.config.template" "tailwind.config.cjs"
+  cp "$ARCHITECT_ROOT/resources/vue/postcss.config.template" "postcss.config.cjs"
 }
 
-write_eslint_config() {
-  if ! $USE_ESLINT; then
-     # Even if no ESLint, we might want Prettier
-     if $USE_PRETTIER; then
-       cat > .prettierrc <<EOF
+write_prettier_config() {
+  if ! $USE_PRETTIER; then return; fi
+  cat > .prettierrc <<EOF
 {
   "semi": false,
   "singleQuote": true,
@@ -26,7 +83,11 @@ write_eslint_config() {
   "trailingComma": "es5"
 }
 EOF
-     fi
+}
+
+write_eslint_config() {
+  if ! $USE_ESLINT; then
+     write_prettier_config
      return
   fi
 
@@ -78,30 +139,27 @@ export default [
 ];
 "
   echo "$config_content" > eslint.config.js
-
-  if $USE_PRETTIER; then
-    cat > .prettierrc <<EOF
-{
-  "semi": false,
-  "singleQuote": true,
-  "tabWidth": 2,
-  "trailingComma": "es5"
-}
-EOF
-  fi
+  write_prettier_config
 }
 
 write_tsconfig() {
   cp "$ARCHITECT_ROOT/resources/vue/tsconfig.json.template" "tsconfig.json"
-  cat > env.d.ts <<EOF
-/// <reference types="vite/client" />
-EOF
+  
+  local types=""
+  if [[ "$BUILD_TOOL" == "vite" ]]; then
+    types="/// <reference types=\"vite/client\" />"
+  fi
+  
+  echo "$types" > env.d.ts
 }
 
 write_jsconfig() {
   cp "$ARCHITECT_ROOT/resources/vue/jsconfig.json.template" "jsconfig.json"
 }
 
+# --- Main Source Generator ---
+# This is the heart of the Vue engine. It compiles all user selections 
+# and triggers the generation of the entire source tree.
 write_code_files() {
   log_header "Engineered Source Generation"
   log_info "Transpiling professional source files..."
@@ -117,9 +175,17 @@ write_code_files() {
   cp ".env" ".env.example"
 
   # index.html
+  local script_tag=""
+  case $BUILD_TOOL in
+    "vite") script_tag="<script type=\"module\" src=\"/src/main.$ext\"></script>" ;;
+    "webpack") script_tag="" ;; # Webpack injects it
+    "rollup") script_tag="<script src=\"dist/bundle.js\"></script>" ;;
+    "parcel") script_tag="<script type=\"module\" src=\"src/main.$ext\"></script>" ;;
+  esac
+
   generate_from_template "$v_res/index.html.template" "index.html" \
     "PROJECT_NAME" "$PROJECT_NAME" \
-    "EXT" "$ext"
+    "SCRIPT_TAG" "$script_tag"
 
   # Constants
   generate_from_template "$v_res/src/constants/index.template" "src/constants/index.$ext"
@@ -154,7 +220,12 @@ write_code_files() {
   generate_from_template "$v_res/src/services/user.service.template" "src/services/user.service.$ext"
 
   # Styles
-  generate_from_template "$v_res/src/assets/styles/main.css.template" "src/assets/styles/main.css"
+  local tw_directives=""
+  if $USE_TAILWIND; then
+    tw_directives="@tailwind base;\n@tailwind components;\n@tailwind utilities;"
+  fi
+  generate_from_template "$v_res/src/assets/styles/main.css.template" "src/assets/styles/main.css" \
+    "TAILWIND_DIRECTIVES" "$(echo -e "$tw_directives")"
 
   # Main Entry
   local router_import=""
@@ -171,11 +242,37 @@ write_code_files() {
     pinia_use="app.use(createPinia())"
   fi
 
+  local ui_import=""
+  local ui_use=""
+  case $UI_LIBRARY in
+    "vuetify")
+      ui_import="import { createVuetify } from 'vuetify'\nimport 'vuetify/styles'\nimport * as components from 'vuetify/components'\nimport * as directives from 'vuetify/directives'"
+      ui_use="app.use(createVuetify({ components, directives }))"
+      ;;
+    "primevue")
+      ui_import="import PrimeVue from 'primevue/config'\nimport 'primevue/resources/themes/lara-light-green/theme.css'"
+      ui_use="app.use(PrimeVue)"
+      ;;
+    "element-plus")
+      ui_import="import ElementPlus from 'element-plus'\nimport 'element-plus/dist/index.css'"
+      ui_use="app.use(ElementPlus)"
+      ;;
+    "ant-design-vue")
+      ui_import="import Antd from 'ant-design-vue'\nimport 'ant-design-vue/dist/reset.css'"
+      ui_use="app.use(Antd)"
+      ;;
+    "bootstrap")
+      ui_import="import 'bootstrap/dist/css/bootstrap.min.css'\nimport 'bootstrap'"
+      ;;
+  esac
+
   generate_from_template "$v_res/src/main.template" "src/main.$ext" \
     "ROUTER_IMPORT" "$router_import" \
     "ROUTER_USE" "$router_use" \
     "PINIA_IMPORT" "$pinia_import" \
-    "PINIA_USE" "$pinia_use"
+    "PINIA_USE" "$pinia_use" \
+    "UI_IMPORT" "$(echo -e "$ui_import")" \
+    "UI_USE" "$ui_use"
 
   # App Entry
   local app_script=""
