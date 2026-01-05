@@ -17,7 +17,7 @@ vue_initialize_project() {
     homepage="https://jissjohnson.info" \
     license="MIT" \
     engines.node=">=18.0.0" \
-    keywords="vue, vite, tailwind, pinia, architect" \
+    keywords="vue, $BUILD_TOOL, tailwind, pinia, architect" \
     architect.engine="vue" \
     architect.createdAt="$(date +"%Y-%m-%d %H:%M:%S")" \
     architect.features.typescript="$IS_TS" \
@@ -47,13 +47,32 @@ vue_install_dependencies() {
   if $USE_DATE_LIB; then CORE_DEPS="$CORE_DEPS date-fns"; fi
   if $USE_NUMBER_LIB; then CORE_DEPS="$CORE_DEPS numeral"; fi
 
-  npm install $CORE_DEPS > /dev/null 2>&1
+  npm install $CORE_DEPS --legacy-peer-deps > /dev/null 2>&1
   stop_spinner "Vue Core Runtime integrated"
 
-  start_spinner "Configuring Development Environment"
-  local DEV_DEPS="vite@$VITE_VERSION @vitejs/plugin-vue"
+  start_spinner "Configuring Development Environment ($BUILD_TOOL)"
+  local DEV_DEPS=""
   
-  if $USE_TAILWIND; then DEV_DEPS="$DEV_DEPS tailwindcss@$TAILWIND_VERSION postcss autoprefixer"; fi
+  case $BUILD_TOOL in
+    "vite")
+      DEV_DEPS="vite@$VITE_VERSION @vitejs/plugin-vue"
+      ;;
+    "webpack")
+      DEV_DEPS="webpack webpack-cli webpack-dev-server vue-loader@latest css-loader vue-style-loader html-webpack-plugin babel-loader @babel/core @babel/preset-env ajv"
+      ;;
+    "rollup")
+      DEV_DEPS="rollup @rollup/plugin-node-resolve @rollup/plugin-commonjs rollup-plugin-vue rollup-plugin-terser @rollup/plugin-alias rollup-plugin-postcss postcss"
+      if $IS_TS; then DEV_DEPS="$DEV_DEPS @rollup/plugin-typescript tslib"; fi
+      ;;
+    "parcel")
+      DEV_DEPS="parcel @parcel/transformer-vue"
+      ;;
+  esac
+  
+  if $USE_TAILWIND; then 
+    DEV_DEPS="$DEV_DEPS tailwindcss@$TAILWIND_VERSION postcss autoprefixer"
+    if [[ "$BUILD_TOOL" == "webpack" ]]; then DEV_DEPS="$DEV_DEPS postcss-loader"; fi
+  fi
   if $USE_ESLINT; then DEV_DEPS="$DEV_DEPS eslint@$ESLINT_VERSION eslint-plugin-vue globals"; fi
   if $USE_PRETTIER; then DEV_DEPS="$DEV_DEPS prettier@$PRETTIER_VERSION"; fi
   if [[ "$USE_ESLINT" == "true" && "$USE_PRETTIER" == "true" ]]; then DEV_DEPS="$DEV_DEPS @vue/eslint-config-prettier"; fi
@@ -61,9 +80,10 @@ vue_install_dependencies() {
   if $IS_TS; then
     DEV_DEPS="$DEV_DEPS typescript vue-tsc @types/node @vue/tsconfig"
     if $USE_ESLINT; then DEV_DEPS="$DEV_DEPS @vue/eslint-config-typescript"; fi
+    if [[ "$BUILD_TOOL" == "webpack" ]]; then DEV_DEPS="$DEV_DEPS ts-loader"; fi
   fi
 
-  npm install -D $DEV_DEPS > /dev/null 2>&1
+  npm install -D $DEV_DEPS --legacy-peer-deps > /dev/null 2>&1
   stop_spinner "Development ecosystem ready"
 }
 
@@ -82,21 +102,30 @@ vue_generate_structure() {
 }
 
 update_scripts() {
-  log_info "Synchronizing specialized scripts..."
+  log_info "Synchronizing specialized scripts for $BUILD_TOOL..."
   
   # Base Scripts
-  npm pkg set \
-    scripts.dev="vite" \
-    scripts.build="vite build" \
-    scripts.preview="vite preview" \
-    > /dev/null
+  case $BUILD_TOOL in
+    "vite")
+      npm pkg set scripts.dev="vite" scripts.build="vite build" scripts.preview="vite preview" > /dev/null
+      ;;
+    "webpack")
+      npm pkg set scripts.dev="webpack serve --mode development" scripts.build="webpack --mode production" > /dev/null
+      ;;
+    "rollup")
+      npm pkg set scripts.dev="rollup -c -w" scripts.build="rollup -c" > /dev/null
+      ;;
+    "parcel")
+      npm pkg set scripts.dev="parcel src/index.html" scripts.build="parcel build src/index.html" > /dev/null
+      ;;
+  esac
   
   # Type Checking
   if $IS_TS; then
-      npm pkg set \
-        scripts.type-check="vue-tsc --noEmit" \
-        scripts.build="npm run type-check && vite build" \
-        > /dev/null
+      npm pkg set scripts.type-check="vue-tsc --noEmit" > /dev/null
+      if [[ "$BUILD_TOOL" == "vite" ]]; then
+          npm pkg set scripts.build="npm run type-check && vite build" > /dev/null
+      fi
   fi
   
   # Linting & Formatting

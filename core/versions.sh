@@ -49,18 +49,19 @@ manual_version_override() {
   log_header "Manual Version Override"
   log_info "Leave empty to use 'latest'"
   
-  # This is engine-agnostic but depends on variables used by engines.
-  # For now, we'll prompt for common ones.
-  
   echo -en "  ${BOLD}${BLUE}?${RESET} ${BOLD}${WHITE}Vue Version: ${RESET}${CYAN}"
   read -r VUE_VERSION < /dev/tty
   [[ -z "$VUE_VERSION" ]] && export VUE_VERSION="latest" || export VUE_VERSION="$VUE_VERSION"
 
-  echo -en "  ${BOLD}${BLUE}?${RESET} ${BOLD}${WHITE}Vite Version: ${RESET}${CYAN}"
-  read -r VITE_VERSION < /dev/tty
-  [[ -z "$VITE_VERSION" ]] && export VITE_VERSION="latest" || export VITE_VERSION="$VITE_VERSION"
+  if [[ "$BUILD_TOOL" == "vite" ]]; then
+    echo -en "  ${BOLD}${BLUE}?${RESET} ${BOLD}${WHITE}Vite Version: ${RESET}${CYAN}"
+    read -r VITE_VERSION < /dev/tty
+    [[ -z "$VITE_VERSION" ]] && export VITE_VERSION="latest" || export VITE_VERSION="$VITE_VERSION"
+  fi
 
-  echo -en "  ${BOLD}${BLUE}?${RESET} ${BOLD}${WHITE}Tailwind Version: ${RESET}${CYAN}"
-  read -r TAILWIND_VERSION < /dev/tty
-  [[ -z "$TAILWIND_VERSION" ]] && export TAILWIND_VERSION="latest" || export TAILWIND_VERSION="$TAILWIND_VERSION"
+  if $USE_TAILWIND; then
+    echo -en "  ${BOLD}${BLUE}?${RESET} ${BOLD}${WHITE}Tailwind Version: ${RESET}${CYAN}"
+    read -r TAILWIND_VERSION < /dev/tty
+    [[ -z "$TAILWIND_VERSION" ]] && export TAILWIND_VERSION="latest" || export TAILWIND_VERSION="$TAILWIND_VERSION"
+  fi
 }

@@ -119,13 +119,14 @@ select_option() {
 # Returns newline-separated "true"/"false" strings to STDOUT
 select_multiple() {
   local prompt="$1"
+  local default_state="${DEFAULT_SELECTION:-false}"
   shift
   local options=("$@")
   local selections=()
   local current=0
   
-  # Initialize all options as unselected
-  for ((i=0; i<${#options[@]}; i++)); do selections[$i]="false"; done
+  # Initialize options with default state
+  for ((i=0; i<${#options[@]}; i++)); do selections[$i]="$default_state"; done
 
   tput civis >&2 # Hide cursor
   while true; do

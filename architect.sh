@@ -22,8 +22,8 @@ source "$ARCHITECT_ROOT/core/init.sh"
 source "$ARCHITECT_ROOT/core/versions.sh"
 
 # --- Global State ---
-PROJECT_NAME=""
-PROJECT_DIR=""
+PROJECT_NAME="${PROJECT_NAME:-}"
+PROJECT_DIR="${PROJECT_DIR:-}"
 SELECTED_ENGINE="vue"
 START_TIME=$(get_timestamp)
 
@@ -34,35 +34,44 @@ START_TIME=$(get_timestamp)
 main() {
   print_banner
   
-  # 1. Initialize Engine logic
+  # 1. Project Configuration
+  if [[ "${SILENT_MODE:-false}" != "true" ]]; then
+    echo ""
+    echo -en "  ${BOLD}${BLUE}?${RESET} ${BOLD}${WHITE}Project Identifier: ${RESET}${CYAN}"
+    read -r input < /dev/tty
+    PROJECT_NAME="${input:-my-vue-app}"
+    
+    local loc_options=("Current Directory (./$PROJECT_NAME)" "Specific Path")
+    local loc_choice=0
+    select_option "Where should we architect this project?" "${loc_options[@]}" || loc_choice=$?
+    
+    if [[ $loc_choice -eq 0 ]]; then
+      PROJECT_DIR="$(pwd)/$PROJECT_NAME"
+    else
+      echo -en "  ${BOLD}${BLUE}?${RESET} ${BOLD}${WHITE}Target Path: ${RESET}${CYAN}"
+      read -r path_input < /dev/tty
+      PROJECT_DIR="$path_input/$PROJECT_NAME"
+    fi
+  else
+    PROJECT_NAME="${PROJECT_NAME:-test-app}"
+    PROJECT_DIR="${PROJECT_DIR:-$(pwd)/$PROJECT_NAME}"
+  fi
+
+  # 2. Initialize Engine logic
   source "$ARCHITECT_ROOT/engines/vue/constants.sh"
   source "$ARCHITECT_ROOT/engines/vue/actions.sh"
   source "$ARCHITECT_ROOT/engines/vue/generators.sh"
   source "$ARCHITECT_ROOT/engines/vue/utils.sh"
 
-  # 2. Select Version Profile
-  select_version_profile "$SELECTED_ENGINE"
-
-  # 3. Project Configuration
-  echo ""
-  echo -en "  ${BOLD}${BLUE}?${RESET} ${BOLD}${WHITE}Project Identifier: ${RESET}${CYAN}"
-  read -r input < /dev/tty
-  PROJECT_NAME="${input:-my-vue-app}"
-  
-  local loc_options=("Current Directory (./$PROJECT_NAME)" "Specific Path")
-  local loc_choice=0
-  select_option "Where should we architect this project?" "${loc_options[@]}" || loc_choice=$?
-  
-  if [[ $loc_choice -eq 0 ]]; then
-    PROJECT_DIR="$(pwd)/$PROJECT_NAME"
-  else
-    echo -en "  ${BOLD}${BLUE}?${RESET} ${BOLD}${WHITE}Target Path: ${RESET}${CYAN}"
-    read -r path_input < /dev/tty
-    PROJECT_DIR="$path_input/$PROJECT_NAME"
+  # 3. Engine Specific Menu (Includes Build Tool)
+  if [[ "${SILENT_MODE:-false}" != "true" ]]; then
+    vue_engine_menu
   fi
-  
-  # 4. Engine Specific Menu
-  vue_engine_menu
+
+  # 4. Select Version Profile
+  if [[ "${SILENT_MODE:-false}" != "true" ]]; then
+    select_version_profile "$SELECTED_ENGINE"
+  fi
 
   # 5. Execute Pipeline
   setup_project_dir "$PROJECT_DIR" "$PROJECT_NAME"
@@ -73,7 +82,7 @@ main() {
   vue_generate_structure
   
   # Engine specific generation
-  write_vite_config
+  write_build_config
   write_tailwind_config
   write_eslint_config
   write_code_files

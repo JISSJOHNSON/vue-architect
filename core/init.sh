@@ -7,11 +7,13 @@ setup_project_dir() {
   local name="$2"
   
   if [[ -d "$dir" && "$(ls -A "$dir" 2>/dev/null)" ]]; then
-    log_warn "Target directory '$dir' is not empty."
-    echo -e -n "${YELLOW}  Continue and potentially overwrite files? (y/N): ${RESET}"
-    read -r confirm < /dev/tty
-    if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
-      fatal_error "Aborted by user."
+    if [[ "${SILENT_MODE:-false}" != "true" ]]; then
+      log_warn "Target directory '$dir' is not empty."
+      echo -e -n "${YELLOW}  Continue and potentially overwrite files? (y/N): ${RESET}"
+      read -r confirm < /dev/tty
+      if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
+        fatal_error "Aborted by user."
+      fi
     fi
     
     if [[ "$dir" != "$(pwd)" ]]; then

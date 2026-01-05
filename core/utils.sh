@@ -32,15 +32,17 @@ generate_from_template() {
   while [[ $# -gt 0 ]]; do
     local key="$1"
     local value="$2"
-    # Using python for robust replacement if available
     if command -v python3 &> /dev/null; then
-      content=$(python3 -c "import sys; print(sys.argv[1].replace('{{' + sys.argv[2] + '}}', sys.argv[3]), end='')" "$content" "$key" "$value")
+      export CONTENT_VAL="$content"
+      export KEY_VAL="$key"
+      export VALUE_VAL="$value"
+      content=$(python3 -c "import os, re; print(re.sub(r'\{\{\s*' + re.escape(os.environ['KEY_VAL']) + r'\s*\}\}', lambda m: os.environ['VALUE_VAL'], os.environ['CONTENT_VAL']), end='')")
     else
-      # Fallback to sed for simpler cases
       content=$(echo "$content" | sed "s|{{$key}}|$value|g")
     fi
     shift 2
   done
+  unset CONTENT_VAL KEY_VAL VALUE_VAL
   
   echo -n "$content" > "$output_path"
 }

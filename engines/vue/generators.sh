@@ -10,10 +10,56 @@ write_vite_config() {
   cp "$ARCHITECT_ROOT/resources/vue/vite.config.template" "vite.config.$ext"
 }
 
+write_webpack_config() {
+  local ext="js"
+  local loader="babel-loader"
+  local options="options: { presets: ['@babel/preset-env'] }"
+  local resolve_exts="'.js', '.vue', '.json'"
+  if $IS_TS; then 
+    ext="ts"
+    loader="ts-loader"
+    options="options: { appendTsSuffixTo: [/\.vue$/] }"
+    resolve_exts="'.ts', '.js', '.vue', '.json'"
+  fi
+  generate_from_template "$ARCHITECT_ROOT/resources/vue/webpack.config.template" "webpack.config.cjs" \
+    "EXT" "$ext" \
+    "LOADER" "$loader" \
+    "OPTIONS" "$options" \
+    "RESOLVE_EXTENSIONS" "$resolve_exts"
+}
+
+write_rollup_config() {
+  local ext="js"
+  local ts_import=""
+  local ts_plugin=""
+  local resolve_exts="'.js', '.vue', '.json'"
+  if $IS_TS; then 
+    ext="ts"
+    ts_import="import typescript from '@rollup/plugin-typescript';"
+    ts_plugin="typescript(),"
+    resolve_exts="'.ts', '.js', '.vue', '.json'"
+  fi
+  generate_from_template "$ARCHITECT_ROOT/resources/vue/rollup.config.template" "rollup.config.js" \
+    "EXT" "$ext" \
+    "TS_IMPORT" "$ts_import" \
+    "TS_PLUGIN" "$ts_plugin" \
+    "RESOLVE_EXTENSIONS" "$resolve_exts"
+}
+
+write_build_config() {
+  log_info "Generating $BUILD_TOOL configuration..."
+  case $BUILD_TOOL in
+    "vite") write_vite_config ;;
+    "webpack") write_webpack_config ;;
+    "rollup") write_rollup_config ;;
+    "parcel") log_info "Parcel requires no explicit config file for this setup." ;;
+  esac
+}
+
 write_tailwind_config() {
   if ! $USE_TAILWIND; then return; fi
-  cp "$ARCHITECT_ROOT/resources/vue/tailwind.config.template" "tailwind.config.js"
-  cp "$ARCHITECT_ROOT/resources/vue/postcss.config.template" "postcss.config.js"
+  cp "$ARCHITECT_ROOT/resources/vue/tailwind.config.template" "tailwind.config.cjs"
+  cp "$ARCHITECT_ROOT/resources/vue/postcss.config.template" "postcss.config.cjs"
 }
 
 write_prettier_config() {
@@ -87,9 +133,13 @@ export default [
 
 write_tsconfig() {
   cp "$ARCHITECT_ROOT/resources/vue/tsconfig.json.template" "tsconfig.json"
-  cat > env.d.ts <<EOF
-/// <reference types="vite/client" />
-EOF
+  
+  local types=""
+  if [[ "$BUILD_TOOL" == "vite" ]]; then
+    types="/// <reference types=\"vite/client\" />"
+  fi
+  
+  echo "$types" > env.d.ts
 }
 
 write_jsconfig() {
@@ -114,9 +164,17 @@ write_code_files() {
   cp ".env" ".env.example"
 
   # index.html
+  local script_tag=""
+  case $BUILD_TOOL in
+    "vite") script_tag="<script type=\"module\" src=\"/src/main.$ext\"></script>" ;;
+    "webpack") script_tag="" ;; # Webpack injects it
+    "rollup") script_tag="<script src=\"dist/bundle.js\"></script>" ;;
+    "parcel") script_tag="<script type=\"module\" src=\"src/main.$ext\"></script>" ;;
+  esac
+
   generate_from_template "$v_res/index.html.template" "index.html" \
     "PROJECT_NAME" "$PROJECT_NAME" \
-    "EXT" "$ext"
+    "SCRIPT_TAG" "$script_tag"
 
   # Constants
   generate_from_template "$v_res/src/constants/index.template" "src/constants/index.$ext"

@@ -3,16 +3,17 @@
 # --- Vue Engine Constants ---
 
 # Defaults (can be overridden by version profiles)
-export VUE_VERSION="${VUE_VERSION:-latest}"
-export VITE_VERSION="${VITE_VERSION:-latest}"
-export TAILWIND_VERSION="${TAILWIND_VERSION:-latest}"
-export PINIA_VERSION="${PINIA_VERSION:-latest}"
-export ROUTER_VERSION="${ROUTER_VERSION:-latest}"
-export ESLINT_VERSION="${ESLINT_VERSION:-latest}"
-export PRETTIER_VERSION="${PRETTIER_VERSION:-latest}"
+export VUE_VERSION="${VUE_VERSION:-^3.4.0}"
+export VITE_VERSION="${VITE_VERSION:-^5.0.0}"
+export TAILWIND_VERSION="${TAILWIND_VERSION:-^3.4.1}"
+export PINIA_VERSION="${PINIA_VERSION:-^2.1.0}"
+export ROUTER_VERSION="${ROUTER_VERSION:-^4.3.0}"
+export ESLINT_VERSION="${ESLINT_VERSION:-^8.56.0}"
+export PRETTIER_VERSION="${PRETTIER_VERSION:-^3.2.0}"
 
 # Vue Engine State
 IS_TS="${IS_TS:-false}"
+BUILD_TOOL="${BUILD_TOOL:-vite}"
 USE_ROUTER="${USE_ROUTER:-true}"
 USE_PINIA="${USE_PINIA:-true}"
 USE_TAILWIND="${USE_TAILWIND:-true}"
@@ -23,6 +24,17 @@ USE_NUMBER_LIB="${USE_NUMBER_LIB:-false}"
 
 vue_engine_menu() {
   echo ""
+  local tools=("Vite (Recommended)" "Webpack" "Rollup" "Parcel")
+  local tool_choice=0
+  select_option "Select Build Tool:" "${tools[@]}" || tool_choice=$?
+  case $tool_choice in
+    0) BUILD_TOOL="vite" ;;
+    1) BUILD_TOOL="webpack" ;;
+    2) BUILD_TOOL="rollup" ;;
+    3) BUILD_TOOL="parcel" ;;
+  esac
+
+  echo ""
   local langs=("JavaScript" "TypeScript")
   local lang_choice=0
   select_option "Select Development Language:" "${langs[@]}" || lang_choice=$?
@@ -30,7 +42,9 @@ vue_engine_menu() {
 
   echo ""
   local features=("Vue Router" "Pinia (State Management)" "Tailwind CSS" "ESLint" "Prettier" "Date Utils (date-fns)" "Currency Utils (numeral)")
+  export DEFAULT_SELECTION="true"
   local results=($(select_multiple "Select Project Features:" "${features[@]}"))
+  unset DEFAULT_SELECTION
   
   USE_ROUTER="${results[0]}"
   USE_PINIA="${results[1]}"
