@@ -79,7 +79,12 @@ Encapsulates all logic specific to Vue.js.
    ./vue-architect.command
    ```
 4. **Commit**: Write clear, concise commit messages.
-5. **Push**: Push to your fork and submit a Pull Request.
+5. **Build**: If you made changes to `resources/` or core logic, verify the single-file build:
+   ```bash
+   ./build.sh
+   ./dist/vue-architect
+   ```
+6. **Push**: Push to your fork and submit a Pull Request.
 
 ### Style Guide
 - **Shell Scripting**:

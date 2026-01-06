@@ -12,6 +12,7 @@ set -o nounset   # Exit on undefined variable
 set -o pipefail  # Exit on pipe failure
 
 # Establish the platform root directory
+INVOCATION_DIR="$(pwd)"
 cd "$(dirname "$0")"
 export ARCHITECT_ROOT="$(pwd)"
 
@@ -46,7 +47,7 @@ main() {
     select_option "Where should we architect this project?" "${loc_options[@]}" || loc_choice=$?
     
     if [[ $loc_choice -eq 0 ]]; then
-      PROJECT_DIR="$(pwd)/$PROJECT_NAME"
+      PROJECT_DIR="$INVOCATION_DIR/$PROJECT_NAME"
     else
       echo -en "  ${BOLD}${BLUE}?${RESET} ${BOLD}${WHITE}Target Path: ${RESET}${CYAN}"
       read -r path_input < /dev/tty
@@ -54,7 +55,7 @@ main() {
     fi
   else
     PROJECT_NAME="${PROJECT_NAME:-test-app}"
-    PROJECT_DIR="${PROJECT_DIR:-$(pwd)/$PROJECT_NAME}"
+    PROJECT_DIR="${PROJECT_DIR:-$INVOCATION_DIR/$PROJECT_NAME}"
   fi
 
   # 2. Initialize Engine logic

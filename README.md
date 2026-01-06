@@ -101,7 +101,23 @@ Run the main entry point:
 ```
 *(On macOS, you can simply **double-click** `vue-architect.command` in Finder)*
 
+
 ---
+
+## 🛠️ Building from Source
+
+To create a single-file distributable executable of the Vue Architect:
+
+1.  Run the build script:
+    ```bash
+    ./build.sh
+    ```
+2.  The executable will be generated at `dist/vue-architect`.
+3.  You can move this file anywhere (e.g., `/usr/local/bin`) and run it:
+    ```bash
+    ./vue-architect
+    ```
+
 
 ## 📂 Project Anatomy
 Every project generated follows this professional structural pattern:
